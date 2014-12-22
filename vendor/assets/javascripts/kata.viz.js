@@ -146,7 +146,7 @@ function TDDColor(color) {
 
 }
 
-function drawKataBackground(){
+function drawKataBackground() {
   // console.log(gon.compiles);
 
   phaseHeight = 10;
@@ -166,7 +166,7 @@ function drawKataBackground(){
     color = d3.scale.category20c();
 
   x = d3.scale.linear()
-    .domain([0, compiles.length+1])
+    .domain([0, compiles.length + 1])
     .range([1, width - 40]);
 
   y = d3.scale.linear()
@@ -202,10 +202,10 @@ function drawKataBackground(){
 
   // Draw Line for compile points
   var myLine = chart.append("svg:line")
-    .attr("x1", x(0)+margin.left)
+    .attr("x1", x(0) + margin.left)
     .attr("y1", lineHeight)
     .attr("x2", function(d, i) {
-      return x(compiles.length+1) ;
+      return x(compiles.length + 1);
     })
     .attr("y2", lineHeight)
     .style("stroke", "#737373")
@@ -245,8 +245,6 @@ function drawKataBackground(){
   //   .attr("transform", "translate(" + margin.left + ",10)");
 
 
-
-  
 
   // //Axis
   // var currTDDBar = chart.append("g")
@@ -291,7 +289,7 @@ function drawKataBackground(){
 }
 
 
-function drawCompilePoints(){
+function drawCompilePoints() {
 
   //Draw Compile Points
   var bar = chart.selectAll("g")
@@ -316,8 +314,8 @@ function drawCompilePoints(){
     .attr("stroke-width", 2);
 }
 
-function drawAxisAndBars(){
-   // //Axis
+function drawAxisAndBars() {
+  // //Axis
   var currTDDBar = chart.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(" + margin.left + "," + axisHeight + ")")
@@ -359,42 +357,103 @@ function drawAxisAndBars(){
 
 }
 
-function drawEachUserMarkups(AllMarkups){
+function drawEachUserMarkups(AllMarkups) {
 
-var offset = 0;
+  var offset = 0;
 
-$.each(AllMarkups, function(i, item) {
-    console.log(item);
+  $.each(AllMarkups, function(i, item) {
+    // console.log(item);
 
-  phaseBars = chart.selectAll("f")
-    .data(item)
-    .enter().append("rect")
-    .attr("x", function(d, i) {
-      return x(d.first_compile_in_phase - 1);
-    })
-    .attr("y", phaseHeight + offset)
-    .attr("width",
-      function(d, i) {
-        if (d.last_compile_in_phase == compiles.length) {
-          return x(d.last_compile_in_phase - d.first_compile_in_phase + 1);
-        } else {
-          return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
-        }
+    phaseBars = chart.selectAll("f")
+      .data(item)
+      .enter().append("rect")
+      .attr("x", function(d, i) {
+        return x(d.first_compile_in_phase - 1);
       })
-    .attr("height", 10)
-    .attr("stroke", "grey")
-    .attr("fill",
-      function(d) {
-        return TDDColor(d.tdd_color);
-      })
-    .attr("transform", "translate(50,10)");
-offset = offset + 20;
+      .attr("y", phaseHeight + offset)
+      .attr("width",
+        function(d, i) {
+          if (d.last_compile_in_phase == compiles.length) {
+            return x(d.last_compile_in_phase - d.first_compile_in_phase + 1);
+          } else {
+            return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
+          }
+        })
+      .attr("height", 10)
+      .attr("stroke", "grey")
+      .attr("fill",
+        function(d) {
+          return TDDColor(d.tdd_color);
+        })
+      .attr("transform", "translate(50,10)");
+    offset = offset + 20;
   });
+
+
+// //Draw Compile Points
+//   var bar = chart.selectAll("rect")
+//     .data(data)
+//     .enter()
+//     .append("g");
+
+//   bar.append("rect")
+//     .attr("x", function(d, i) {
+//       return x(d.git_tag);
+//     })
+//     .attr("y", -5)
+//     .attr("width", 10)
+//     .attr("height", 10)
+//     .attr("r", 4)
+//     .attr("rx", 2.5)
+//     .attr("ry", 2.5)
+//     .attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+//     .attr("fill", function(d) {
+//       return TDDColor(d.light_color);
+//     })
+//     .attr("stroke-width", 2);
+
 }
 
 
-function highlightDiffs(){
-  
+function highlightDiffs(AllMarkups) {
+  // console.log(AllMarkups);
+
+  var compilesArray = new Array(compiles.length);
+  for (var i = 0; i < compiles.length + 1; i++) {
+    compilesArray[i] = new Array();
+  }
+  $.each(AllMarkups, function(i, item) {
+    // console.log(item);
+     $.each(item, function(j, phase) {
+      // console.log(phase);
+      for (var k = phase.first_compile_in_phase; k < phase.last_compile_in_phase; k++) {
+        compilesArray[k][i] = phase.tdd_color;
+      }
+     });
+
+  });
+  console.log(compilesArray);
+
+    diffBoxes = chart.selectAll("f")
+      .data(compilesArray)
+      .enter().append("rect")
+      .attr("x", function(d, i) {
+        return x(i-1);
+      })
+      .attr("y", 10)
+      .attr("width", function(d, i) {
+        return x(1);
+        })
+      .attr("height", 150)
+      .attr("stroke", "grey")
+      .attr("fill",  function(d, i) {
+        return x(1);
+        })
+      .attr("opacity", .2)
+      .attr("transform", "translate(50,10)");
+    // offset = offset + 20;
+
+
 }
 
 function drawUncatagorizedKata() {
@@ -417,7 +476,7 @@ function drawUncatagorizedKata() {
     color = d3.scale.category20c();
 
   x = d3.scale.linear()
-    .domain([0, compiles.length+1])
+    .domain([0, compiles.length + 1])
     .range([1, width - 40]);
 
   var y = d3.scale.linear()
@@ -1124,9 +1183,9 @@ function populateAccordion(data) {
               setValue(str2);
             }
           });
-          var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
-        var currHTML = $('#accordion h3:contains()').last().html()  ;
-        $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength-1)) ;
+        var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
+        var currHTML = $('#accordion h3:contains()').last().html();
+        $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength - 1));
 
       })
     //Add unique start files
@@ -1162,9 +1221,9 @@ function populateAccordion(data) {
             setValue(str2);
           }
         });
-        var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
-        var currHTML = $('#accordion h3:contains()').last().html() ;
-        $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength-1)) ;
+      var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
+      var currHTML = $('#accordion h3:contains()').last().html();
+      $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength - 1));
 
     })
 
@@ -1202,10 +1261,10 @@ function populateAccordion(data) {
           }
         });
 
-        // console.log($('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length);
-        var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
-        var currHTML = $('#accordion h3:contains()').last().html() ;
-        $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength-1)) ;
+      // console.log($('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length);
+      var diffLength = $('#compare_' + safeName).mergely('diff').split(/\r\n|\r|\n/).length;
+      var currHTML = $('#accordion h3:contains()').last().html();
+      $('#accordion h3:contains()').last().html(currHTML + " ChangeValue:" + (diffLength - 1));
 
     })
 
