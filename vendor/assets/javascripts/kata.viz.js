@@ -453,7 +453,7 @@ isEqual = false ;
           return "red";
         }
         })
-      .attr("opacity", .2)
+      .attr("opacity", .08)
       .attr("transform", "translate(50,10)");
     // offset = offset + 20;
 
