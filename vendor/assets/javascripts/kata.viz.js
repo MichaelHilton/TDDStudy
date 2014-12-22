@@ -56,8 +56,8 @@ function pageSetup() {
       url: "/viz/retrieve_session",
       dataType: 'json',
       data: {
-        'start': 2,
-        'end': 4,
+        'start': 0,
+        'end': 1,
         'cyberdojo_id': gon.cyberdojo_id,
         'cyberdojo_avatar': gon.cyberdojo_avatar
       },
@@ -146,9 +146,420 @@ function TDDColor(color) {
 
 }
 
+function drawKataBackground(){
+  // console.log(gon.compiles);
 
+  phaseHeight = 10;
+  lineHeight = 100;
+  scaleHeight = 210;
+  axisHeight = 170;
+  margin = {
+      top: 20,
+      right: 20,
+      bottom: 30,
+      left: 10
+    },
+    width = $(window).width() - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+  var barHeight = 50,
+    color = d3.scale.category20c();
+
+  x = d3.scale.linear()
+    .domain([0, compiles.length+1])
+    .range([1, width - 40]);
+
+  y = d3.scale.linear()
+    .range([scaleHeight, scaleHeight - 10]);
+
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+  area = d3.svg.area()
+    .x(function(d) {
+      return x(d.date);
+    })
+    .y0(height)
+    .y1(function(d) {
+      return y(d.close);
+    });
+
+
+  brush = d3.svg.brush()
+    .x(x)
+    .extent([0, 1])
+    .on("brushend", brushended);
+
+  xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+  chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", barHeight * 4);
+
+
+  // Draw Line for compile points
+  var myLine = chart.append("svg:line")
+    .attr("x1", x(0)+margin.left)
+    .attr("y1", lineHeight)
+    .attr("x2", function(d, i) {
+      return x(compiles.length+1) ;
+    })
+    .attr("y2", lineHeight)
+    .style("stroke", "#737373")
+    .style("stroke-width", "1");
+
+  // Draw left start line
+  var startLine = chart.append("svg:line")
+    .attr("x1", margin.left + 1)
+    .attr("y1", lineHeight - 6)
+    .attr("x2", margin.left + 1)
+    .attr("y2", lineHeight + 6)
+    .style("stroke", "#737373");
+
+
+  // //Draw phase bars
+  // phaseBars = chart.selectAll("f")
+  //   .data(phaseData)
+  //   .enter().append("rect")
+  //   .attr("x", function(d, i) {
+  //     return x(d.first_compile_in_phase - 1);
+  //   })
+  //   .attr("y", phaseHeight)
+  //   .attr("width",
+  //     function(d, i) {
+  //       if (d.last_compile_in_phase == compiles.length) {
+  //         return x(d.last_compile_in_phase - d.first_compile_in_phase + 1);
+  //       } else {
+  //         return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
+  //       }
+  //     })
+  //   .attr("height", 10)
+  //   .attr("stroke", "grey")
+  //   .attr("fill",
+  //     function(d) {
+  //       return TDDColor(d.tdd_color);
+  //     })
+  //   .attr("transform", "translate(" + margin.left + ",10)");
+
+
+
+  
+
+  // //Axis
+  // var currTDDBar = chart.append("g")
+  //   .attr("class", "x axis")
+  //   .attr("transform", "translate(" + margin.left + ",110)")
+  //   .call(xAxis)
+  //   .selectAll("text")
+  //   .attr("y", 6)
+  //   .attr("height", 10)
+  //   .style("text-anchor", "start")
+  //   .style("font-size", "16px");
+
+
+  // var lineFunction = d3.svg.line()
+  //   .x(function(d) {
+  //     // console.log(d.git_tag);
+  //     return x(d.git_tag);
+  //   })
+  //   .y(function(d) {
+  //     // console.log(d.total_test_method_count);
+  //     return y(d.total_test_method_count);
+  //   })
+  //   .interpolate("linear");
+
+  // //The line SVG Path we draw
+  // var lineGraph = chart.append("path")
+  //   .attr("d", lineFunction(data))
+  //   .attr("stroke", "#737373")
+  //   .attr("stroke-width", 2)
+  //   .attr("fill", "#737373");
+
+  // var gBrush = chart.append("g")
+  //   .attr("class", "brush")
+  //   .call(brush)
+  //   .call(brush.event);
+
+  // gBrush.selectAll("rect")
+  //   .attr("height", 51)
+  //   .attr("transform", "translate(" + margin.left + ",59)");
+
+
+}
+
+
+function drawCompilePoints(){
+
+  //Draw Compile Points
+  var bar = chart.selectAll("g")
+    .data(data)
+    .enter()
+    .append("g");
+
+  bar.append("rect")
+    .attr("x", function(d, i) {
+      return x(d.git_tag);
+    })
+    .attr("y", -5)
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("r", 4)
+    .attr("rx", 2.5)
+    .attr("ry", 2.5)
+    .attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+    .attr("fill", function(d) {
+      return TDDColor(d.light_color);
+    })
+    .attr("stroke-width", 2);
+}
+
+function drawAxisAndBars(){
+   // //Axis
+  var currTDDBar = chart.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(" + margin.left + "," + axisHeight + ")")
+    .call(xAxis)
+    .selectAll("text")
+    .attr("y", 6)
+    .attr("height", 10)
+    .style("text-anchor", "start")
+    .style("font-size", "16px");
+
+
+  var lineFunction = d3.svg.line()
+    .x(function(d) {
+      // console.log(d.git_tag);
+      return x(d.git_tag);
+    })
+    .y(function(d) {
+      // console.log(d.total_test_method_count);
+      return y(d.total_test_method_count);
+    })
+    .interpolate("linear");
+
+  //The line SVG Path we draw
+  var lineGraph = chart.append("path")
+    .attr("d", lineFunction(data))
+    .attr("stroke", "#737373")
+    .attr("stroke-width", 2)
+    .attr("fill", "#737373");
+
+  var gBrush = chart.append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .call(brush.event);
+
+  gBrush.selectAll("rect")
+    .attr("height", 51)
+    .attr("transform", "translate(" + margin.left + ",59)");
+
+
+}
+
+function drawEachUserMarkups(AllMarkups){
+
+var offset = 0;
+
+$.each(AllMarkups, function(i, item) {
+    console.log(item);
+
+  phaseBars = chart.selectAll("f")
+    .data(item)
+    .enter().append("rect")
+    .attr("x", function(d, i) {
+      return x(d.first_compile_in_phase - 1);
+    })
+    .attr("y", phaseHeight + offset)
+    .attr("width",
+      function(d, i) {
+        if (d.last_compile_in_phase == compiles.length) {
+          return x(d.last_compile_in_phase - d.first_compile_in_phase + 1);
+        } else {
+          return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
+        }
+      })
+    .attr("height", 10)
+    .attr("stroke", "grey")
+    .attr("fill",
+      function(d) {
+        return TDDColor(d.tdd_color);
+      })
+    .attr("transform", "translate(50,10)");
+offset = offset + 20;
+  });
+}
+
+
+function highlightDiffs(){
+  
+}
 
 function drawUncatagorizedKata() {
+
+  // console.log(gon.compiles);
+
+  phaseHeight = 10;
+  var lineHeight = 50;
+  var scaleHeight = 110;
+  margin = {
+      top: 20,
+      right: 20,
+      bottom: 30,
+      left: 10
+    },
+    width = $(window).width() - margin.left - margin.right,
+    height = 100 - margin.top - margin.bottom;
+
+  var barHeight = 50,
+    color = d3.scale.category20c();
+
+  x = d3.scale.linear()
+    .domain([0, compiles.length+1])
+    .range([1, width - 40]);
+
+  var y = d3.scale.linear()
+    .range([scaleHeight, scaleHeight - 10]);
+
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+  var area = d3.svg.area()
+    .x(function(d) {
+      return x(d.date);
+    })
+    .y0(height)
+    .y1(function(d) {
+      return y(d.close);
+    });
+
+
+  brush = d3.svg.brush()
+    .x(x)
+    .extent([0, 1])
+    .on("brushend", brushended);
+
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+  chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", barHeight * 3);
+
+
+  // Draw Line for compile points
+  var myLine = chart.append("svg:line")
+    .attr("x1", margin.left)
+    .attr("y1", lineHeight)
+    .attr("x2", function(d, i) {
+      return x(compiles.length) + 5;
+    })
+    .attr("y2", lineHeight)
+    .style("stroke", "#737373")
+    .style("stroke-width", "1");
+
+  // Draw left start line
+  var startLine = chart.append("svg:line")
+    .attr("x1", margin.left + 1)
+    .attr("y1", lineHeight - 6)
+    .attr("x2", margin.left + 1)
+    .attr("y2", lineHeight + 6)
+    .style("stroke", "#737373");
+
+
+  //Draw phase bars
+  phaseBars = chart.selectAll("f")
+    .data(phaseData)
+    .enter().append("rect")
+    .attr("x", function(d, i) {
+      return x(d.first_compile_in_phase - 1);
+    })
+    .attr("y", phaseHeight)
+    .attr("width",
+      function(d, i) {
+        if (d.last_compile_in_phase == compiles.length) {
+          return x(d.last_compile_in_phase - d.first_compile_in_phase + 1);
+        } else {
+          // return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
+        }
+      })
+    .attr("height", 10)
+    .attr("stroke", "grey")
+    .attr("fill",
+      function(d) {
+        return TDDColor(d.tdd_color);
+      })
+    .attr("transform", "translate(" + margin.left + ",10)");
+
+
+
+  //Draw Compile Points
+  var bar = chart.selectAll("g")
+    .data(data)
+    .enter().append("g");
+
+  bar.append("rect")
+    .attr("x", function(d, i) {
+      return x(d.git_tag);
+    })
+    .attr("y", -5)
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("r", 4)
+    .attr("rx", 2.5)
+    .attr("ry", 2.5)
+    .attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+    .attr("fill", function(d) {
+      return TDDColor(d.light_color);
+    })
+    .attr("stroke-width", 2);
+
+  //Axis
+  var currTDDBar = chart.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(" + margin.left + ",110)")
+    .call(xAxis)
+    .selectAll("text")
+    .attr("y", 6)
+    .attr("height", 10)
+    .style("text-anchor", "start")
+    .style("font-size", "16px");
+
+
+  var lineFunction = d3.svg.line()
+    .x(function(d) {
+      // console.log(d.git_tag);
+      return x(d.git_tag);
+    })
+    .y(function(d) {
+      // console.log(d.total_test_method_count);
+      return y(d.total_test_method_count);
+    })
+    .interpolate("linear");
+
+  //The line SVG Path we draw
+  var lineGraph = chart.append("path")
+    .attr("d", lineFunction(data))
+    .attr("stroke", "#737373")
+    .attr("stroke-width", 2)
+    .attr("fill", "#737373");
+
+  var gBrush = chart.append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .call(brush.event);
+
+  gBrush.selectAll("rect")
+    .attr("height", 51)
+    .attr("transform", "translate(" + margin.left + ",59)");
+}
+
+
+function drawallMarkups() {
 
   // console.log(gon.compiles);
 
@@ -251,7 +662,8 @@ function drawUncatagorizedKata() {
   //Draw Compile Points
   var bar = chart.selectAll("g")
     .data(data)
-    .enter().append("g");
+    .enter()
+    .append("g");
 
   bar.append("rect")
     .attr("x", function(d, i) {
@@ -308,7 +720,6 @@ function drawUncatagorizedKata() {
     .attr("height", 51)
     .attr("transform", "translate(" + margin.left + ",59)");
 }
-
 
 
 function drawKataViz() {

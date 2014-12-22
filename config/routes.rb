@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post 'viz/del_markup'
 
   get 'viz/allCorpus'
+  
+  get 'viz/markupComparison'
 
   get 'viz/manualCatTool'
 
