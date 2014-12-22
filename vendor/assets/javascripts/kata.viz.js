@@ -379,39 +379,30 @@ function drawEachUserMarkups(AllMarkups) {
             return x(d.last_compile_in_phase - d.first_compile_in_phase + 2);
           }
         })
-      .attr("height", 10)
+      .attr("height", 15)
       .attr("stroke", "grey")
       .attr("fill",
         function(d) {
           return TDDColor(d.tdd_color);
         })
       .attr("transform", "translate(50,10)");
+
+// compilesArray[0]
+chart.append("svg:text")
+.attr("x", function(d, i) {
+        return x(1);
+      })
+.attr("y", phaseHeight + offset)
+.attr("dy",".35em")
+// .attr("text-anchor", "right")
+.style("font", "300 12px Helvetica Neue")
+.text(i)
+.attr("fill","white")
+.attr("transform", "translate(6,18)");
+
     offset = offset + 20;
+
   });
-
-
-// //Draw Compile Points
-//   var bar = chart.selectAll("rect")
-//     .data(data)
-//     .enter()
-//     .append("g");
-
-//   bar.append("rect")
-//     .attr("x", function(d, i) {
-//       return x(d.git_tag);
-//     })
-//     .attr("y", -5)
-//     .attr("width", 10)
-//     .attr("height", 10)
-//     .attr("r", 4)
-//     .attr("rx", 2.5)
-//     .attr("ry", 2.5)
-//     .attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
-//     .attr("fill", function(d) {
-//       return TDDColor(d.light_color);
-//     })
-//     .attr("stroke-width", 2);
-
 }
 
 
@@ -465,7 +456,6 @@ isEqual = false ;
       .attr("opacity", .2)
       .attr("transform", "translate(50,10)");
     // offset = offset + 20;
-
 
 }
 
