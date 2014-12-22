@@ -447,7 +447,20 @@ function highlightDiffs(AllMarkups) {
       .attr("height", 150)
       .attr("stroke", "grey")
       .attr("fill",  function(d, i) {
-        return x(1);
+        // return x(1);
+        var ArrayOfKeys = Object.keys(d)
+        var initialValue = d[ArrayOfKeys[0]];
+        var isEqual = true;
+        for(var j = 1; j < ArrayOfKeys.length; j++){
+          if(d[ArrayOfKeys[j]] != initialValue){
+isEqual = false ;
+          }
+        }
+        if(isEqual){
+          return "green";
+        }else{
+          return "red";
+        }
         })
       .attr("opacity", .2)
       .attr("transform", "translate(50,10)");
