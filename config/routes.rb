@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   get 'visualizations/index'
 
   get 'viz/index'
@@ -11,11 +12,30 @@ Rails.application.routes.draw do
   
   get 'viz/markupComparison'
 
+  get 'viz/markupView'
+
   get 'viz/manualCatTool'
 
   get 'viz/timelineWithBrush'
 
   get 'viz/retrieve_session'
+
+  #Markup Controller/View
+
+  get 'markup/' => 'markup#index'
+
+  post 'markup/store_markup' => 'markup#store_markup'
+
+  post 'markup/del_markup' => 'markup#del_markup'
+
+  get 'markup/manualCatTool' => 'markup#manualCatTool'
+
+  get 'markup/timelineWithBrush' => 'markup#timelineWithBrush'
+
+  get 'markup/retrieve_session' => 'markup#retrieve_session'
+
+  get 'markup/:researcher' => 'markup#researcher'
+
 
   get 'cycle_catagorizer/cycle_catgories'
 
