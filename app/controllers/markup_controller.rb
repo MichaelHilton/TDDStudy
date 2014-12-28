@@ -214,4 +214,36 @@ class MarkupController < ApplicationController
 			format.json { render :json => names }
 		end
 	end	
+
+
+	def markupComparison
+
+		@cyberdojo_id = params[:id]
+		@cyberdojo_avatar = params[:avatar]
+		@currSession = Session.where(cyberdojo_id: @cyberdojo_id, avatar: @cyberdojo_avatar).first  #.first
+		gon.compiles = @currSession.compiles
+
+
+		allMarkups = Hash.new
+		@currSession.markups.each do |markup|
+
+			if allMarkups.has_key?(markup.user)
+				allMarkups[markup.user] << markup
+			else
+				currMarkup = Array.new
+				currMarkup << markup
+				allMarkups[markup.user] = currMarkup
+			end
+			puts "MARKUP"
+			puts markup.user
+			puts markup.inspect
+		end
+
+		gon.allMarkups = allMarkups
+
+		gon.phases = Array.new
+		gon.cyberdojo_id = @cyberdojo_id
+		gon.cyberdojo_avatar = @cyberdojo_avatar
+	end
+
 end

@@ -34,6 +34,8 @@ Rails.application.routes.draw do
 
   get 'markup/retrieve_session' => 'markup#retrieve_session'
 
+  get 'markup/markupComparison' => 'markup#markupComparison'
+
   get 'markup/:researcher' => 'markup#researcher'
 
 
