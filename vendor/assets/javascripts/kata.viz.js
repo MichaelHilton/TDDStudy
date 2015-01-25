@@ -21,7 +21,17 @@ function drawCompilePoints() {
 		.attr("fill", function(d) {
 			return TDDColor(d.light_color);
 		})
-		.attr("stroke-width", 2);
+		.attr("stroke-width", 2)
+		.attr("stroke", function(d) {
+			var currColor = TDDColor(d.light_color);
+			if(currColor == "white"){
+				return "gray";	
+			}else{
+				return currColor;
+			}
+		});
+		// .attr("style", "outline: thin solid red;");   //This will do the job;
+
 }
 
 function drawCycleArea(){
@@ -34,7 +44,7 @@ function drawCycleArea(){
     	}
 
     })
-    .attr("y", 20)
+    .attr("y", 90)
     .attr("width",
       function(d, i) {
       	if(d.valid_tdd){
@@ -47,10 +57,9 @@ function drawCycleArea(){
     .attr("stroke", "grey")
     .attr("fill", function(d) {
       if (d.valid_tdd == true) {
-        return "#BABABA";
+        return "#EEEEEE";
       }
       if (d.valid_tdd == false) {
-        
         // return "#6F6F6F";
       }
 
@@ -401,7 +410,7 @@ function drawKataBackground() {
 	// console.log(gon.compiles);
 
 	phaseHeight = 10;
-	lineHeight = 100;
+	lineHeight = 145;
 	scaleHeight = 210;
 	axisHeight = 170;
 	margin = {

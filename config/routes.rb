@@ -32,6 +32,8 @@ Rails.application.routes.draw do
 
   get 'markup/display_kata' => 'markup#display_kata'
 
+  get 'markup/index_simple' => 'markup#index_simple'
+
   get 'markup/timelineWithBrush' => 'markup#timelineWithBrush'
 
   get 'markup/retrieve_session' => 'markup#retrieve_session'
