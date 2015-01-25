@@ -1,3 +1,29 @@
+
+function drawCompilePoints() {
+
+	//Draw Compile Points
+	var bar = chart.selectAll("g")
+		.data(data)
+		.enter()
+		.append("g");
+
+	bar.append("rect")
+		.attr("x", function(d, i) {
+			return x(d.git_tag);
+		})
+		.attr("y", -5)
+		.attr("width", 10)
+		.attr("height", 10)
+		.attr("r", 4)
+		.attr("rx", 2.5)
+		.attr("ry", 2.5)
+		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+		.attr("fill", function(d) {
+			return TDDColor(d.light_color);
+		})
+		.attr("stroke-width", 2);
+}
+
 function drawCycleArea(){
 	chart.selectAll("h")
     .data(gon.allCycles)
@@ -362,7 +388,7 @@ function TDDColor(color) {
 	} else if (color == "blue") {
 		return "#385e86";
 	} else if (color == "amber") {
-		return "orange";
+		return "white";
 	} else if (color == "white") {
 		return "#efefef";
 	} else if (color == "brown") {
@@ -514,30 +540,7 @@ function drawKataBackground() {
 }
 
 
-function drawCompilePoints() {
 
-	//Draw Compile Points
-	var bar = chart.selectAll("g")
-		.data(data)
-		.enter()
-		.append("g");
-
-	bar.append("rect")
-		.attr("x", function(d, i) {
-			return x(d.git_tag);
-		})
-		.attr("y", -5)
-		.attr("width", 10)
-		.attr("height", 10)
-		.attr("r", 4)
-		.attr("rx", 2.5)
-		.attr("ry", 2.5)
-		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
-		.attr("fill", function(d) {
-			return TDDColor(d.light_color);
-		})
-		.attr("stroke-width", 2);
-}
 
 function drawAxisAndBars() {
 	// //Axis

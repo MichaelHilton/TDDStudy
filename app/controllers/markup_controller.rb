@@ -18,6 +18,15 @@ class MarkupController < ApplicationController
     @researchers = Researcher.all
   end
 
+
+  def index_simple
+    # @sessions = Session.where(language_framework: "Java-1.8_JUnit")
+    #find_by_sql
+    @sessions = Session.find_by_sql("SELECT (select Count(*) from cycles as c where c.session_id = s.id)as a,* FROM sessions as s WHERE a > 5 AND s.language_framework LIKE \"Java-1.8_JUnit\"")
+    #@sessions = Session.where(language_framework: "Java-1.8_JUnit")
+    #SELECT (select Count(*) from cycles as c where c.session_id = s.id)as a,* FROM sessions as s WHERE a > 5
+  end
+
   def dojo
     externals = {
       :disk   => OsDisk.new,
@@ -232,7 +241,11 @@ class MarkupController < ApplicationController
       # puts "CYCLE:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
       # puts cycle.phases.first.compiles.first.git_tag.to_s
       curr_cycle["startCompile"] = cycle.phases.first.compiles.first.git_tag
-      curr_cycle["endCompile"] = cycle.phases.last.compiles.last.git_tag
+      if cycle.phases.last.compiles.count > 0
+        curr_cycle["endCompile"] = cycle.phases.last.compiles.last.git_tag
+      else
+        curr_cycle["endCompile"] = cycle.phases.first.compiles.first.git_tag
+      end
       curr_cycle["valid_tdd"] = cycle.valid_tdd
       allCycles << curr_cycle
     end
@@ -242,16 +255,21 @@ class MarkupController < ApplicationController
     normalizedPhaseSLOC = Array.new()
     allPhases  = Array.new
 
+    totalCycleSloc = 0
+    totalCycleTime = 0
+
     Cycle.where(session_id: @currSession.id).each do |cycle|
       currPhaseTime = Hash.new
       currPhaseSloc = Hash.new
       #Find Total Cycle Time
-      totalCycleSloc = 0
-      totalCycleTime = 0
+      # totalCycleSloc = 0
+      # totalCycleTime = 0
       Phase.where(cycle_id: cycle.id).each do |phase|
         Compile.where(phase_id: phase.id).each do |compile|
-          totalCycleSloc = totalCycleSloc + compile.total_sloc_count
-          totalCycleTime = totalCycleTime + compile.seconds_since_last_light
+          if phase.tdd_color == "red" || phase.tdd_color == "green" || phase.tdd_color == "blue"
+            totalCycleSloc = totalCycleSloc + compile.total_sloc_count
+            totalCycleTime = totalCycleTime + compile.seconds_since_last_light
+          end
         end
       end
 
