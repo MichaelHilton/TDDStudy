@@ -39,19 +39,19 @@ function drawCycleArea(){
     .data(gon.allCycles)
     .enter().append("rect")
     .attr("x", function(d, i) {
-    	if(d.valid_tdd){
+    	// if(d.valid_tdd){
     		      return x(d.startCompile - 1);
-    	}
+    	// }
 
     })
-    .attr("y", 90)
+    .attr("y", 15)
     .attr("width",
       function(d, i) {
-      	if(d.valid_tdd){
+      	// if(d.valid_tdd){
         return x(d.endCompile - d.startCompile + 1);
-      }
+      // }
       })
-    .attr("height", 40)
+    .attr("height", 30)
     .attr("rx", 6)
     .attr("ry", 6)
     .attr("stroke", "grey")
@@ -64,7 +64,11 @@ function drawCycleArea(){
       }
 
     })
-    .attr("transform", "translate(" + margin.left + ",-10)");
+    .attr("transform", "translate(" + margin.left + ",-10)")
+	.attr("id", function(d, i){ 
+		var result = "Cycle_Area" + i; 
+		return result; 
+	});
 
 }
 
@@ -75,7 +79,7 @@ function diplay_kata_algorithm(phases) {
 		.attr("x", function(d, i) {
 			return x(d.compiles[0] - 1);
 		})
-		.attr("y", phaseHeight )
+		.attr("y", 3 )
 		.attr("width",
 			function(d, i) {
 				return x(d.compiles[d.compiles.length - 1] - d.compiles[0] + 1);
@@ -257,7 +261,13 @@ function buildpulseChart(TDDData) {
 		function(element, index) {
 			curr_TDD_data = element;
 			console.log(element);
-			// var metrics = mapPulseArrayToMetrics(TDDPulse, metricFunction);
+
+			var curr_width = $('#PulseAreaDetail').width();
+			$('#PulseAreaDetail').width(curr_width + 100);
+			$('#PulseAreaDetail').append("<div class='pulseChart' id='pulse"+index+"'></div>");
+			var data = createHiveData(curr_TDD_data.red, curr_TDD_data.green, curr_TDD_data.blue);
+			
+
 			var my_pulsePlot =
 				pulsePlot()
 				.width(100)
@@ -265,13 +275,14 @@ function buildpulseChart(TDDData) {
 				.innerRadius(10)
 				.outerRadius(50);
 
-			var curr_width = $('#PulseAreaDetail').width();
-			$('#PulseAreaDetail').width(curr_width + 100);
-			$('#PulseAreaDetail').append("<div class='pulseChart' id='pulse"+index+"'></div>");
-			var data = createHiveData(curr_TDD_data.red, curr_TDD_data.green, curr_TDD_data.blue);
 			d3.select("#pulse"+index)
 				.datum(data)
 				.call(my_pulsePlot);
+
+			var newWidth = $("#Cycle_Area"+index).attr("width")-2;
+			$("#pulse"+index).width(newWidth);
+			var correctMargin = (100-newWidth)/2
+			$("#pulse"+index).children().css('marginLeft', '-'+correctMargin+'px');
 		})
 }
 
@@ -410,9 +421,9 @@ function drawKataBackground() {
 	// console.log(gon.compiles);
 
 	phaseHeight = 10;
-	lineHeight = 145;
-	scaleHeight = 210;
-	axisHeight = 170;
+	lineHeight = 52;
+	scaleHeight = 110;
+	axisHeight = 70;
 	margin = {
 			top: 20,
 			right: 20,
@@ -457,7 +468,7 @@ function drawKataBackground() {
 
 	chart = d3.select(".chart")
 		.attr("width", width)
-		.attr("height", barHeight * 4);
+		.attr("height", 100);
 
 
 	// Draw Line for compile points
@@ -582,15 +593,27 @@ function drawAxisAndBars() {
 		.attr("stroke-width", 2)
 		.attr("fill", "#737373");
 
+	// var gBrush = chart.append("g")
+	// 	.attr("class", "brush")
+	// 	.call(brush)
+	// 	.call(brush.event);
+
+	// gBrush.selectAll("rect")
+	// 	.attr("height", 70)
+	// 	.attr("transform", "translate(" + margin.left + ",0)");
+
+
+}
+
+function drawChartRect(){
 	var gBrush = chart.append("g")
 		.attr("class", "brush")
 		.call(brush)
 		.call(brush.event);
 
 	gBrush.selectAll("rect")
-		.attr("height", 51)
-		.attr("transform", "translate(" + margin.left + ",59)");
-
+		.attr("height", 70)
+		.attr("transform", "translate(" + margin.left + ",0)");
 
 }
 

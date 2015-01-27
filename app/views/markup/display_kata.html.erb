@@ -152,10 +152,14 @@ border-top-left-radius: 4px;
 width:100px;
 height:100px;
 overflow: scroll;
+margin-left:10px;
 }
 
 .pulseChart{
   float:left;
+  background-color:white;
+  border: 1px solid white;
+  text-align: center;
 }
 #aggHivePlot{
   width:100px;
@@ -218,11 +222,11 @@ drawKataBackground();
 drawCompilePoints();
 drawAxisAndBars();
 drawCycleArea();
-// diplay_kata_algorithm(gon.phases);
+diplay_kata_algorithm(gon.phases);
 
 // buildpulseChart(gon.normalizedPhaseSLOC);
 // buildAggPulseChart(gon.normalizedPhaseSLOC);
 buildpulseChart(gon.normalizedPhaseTime);
 buildAggPulseChart(gon.normalizedPhaseTime);
-
+drawChartRect();
 </script>
