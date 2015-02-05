@@ -260,7 +260,7 @@ function buildpulseChart(TDDData) {
 	TDDData.forEach(
 		function(element, index) {
 			curr_TDD_data = element;
-			console.log(element);
+			// console.log(element);
 
 			var curr_width = $('#PulseAreaDetail').width();
 			$('#PulseAreaDetail').width(curr_width + 100);
