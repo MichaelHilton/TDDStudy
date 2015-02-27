@@ -21,8 +21,14 @@ def dojo
   Dojo.new(root_path,externals)
 end
 
+def dots(dot_count)
+  dots = '.' * (dot_count % 32)
+  spaces = ' ' * (32 - dot_count % 32)
+  dots + spaces + number(dot_count,5)
+end
+
 def defaultSetup(curr_path)
-  puts "DEFAULT_SETUP"
+  puts "DEFAULT_SETUP" if DEBUG
   if(File.exist?(curr_path + "\/Untitled.java") && File.exist?(curr_path + "\/UntitledTest.java"))
     file = File.open(curr_path + "\/Untitled.java" , "rb")
     contents = file.read
@@ -35,7 +41,7 @@ def defaultSetup(curr_path)
 
     if(templateProduction == contents)
       if template_test == test_contents
-        puts "EQUAL"
+        puts "EQUAL" if DEBUG
         return true
       end
     end
@@ -61,7 +67,7 @@ def defaultSetup(curr_path)
 
     if(templateProduction == contents)
       if template_test == test_contents
-        puts "EQUAL"
+        puts "EQUAL" if DEBUG
         return true
       end
     end
@@ -103,14 +109,12 @@ task :analyze_ast => :environment do
 end
 
 def ast_processing
+  count = 0
   FileUtils.mkdir_p BUILD_DIR, :mode => 0700
-
 
   #TO CLEAR UPDATE compiles SET test_change = null
   # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
   # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN markup_assignments as m on m.session_id = s.id").each do |session_id|
-
-
 
   Session.find_by_sql("SELECT id,kata_name,cyberdojo_id,avatar FROM Sessions").each do |session_id|
 
@@ -179,12 +183,12 @@ def ast_processing
 
 
       session.compiles.each_cons(2) do |prev, curr|
-        puts "prev: " + prev.git_tag.to_s + " -> curr: " + curr.git_tag.to_s
+        puts "prev: " + prev.git_tag.to_s + " -> curr: " + curr.git_tag.to_s if DEBUG
 
         prev_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[prev.git_tag-1], session.language_framework)
         curr_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[curr.git_tag-1], session.language_framework)
 
-        puts curr_files.inspect
+        puts curr_files.inspect if DEBUG
 
 
         prev_files = prev_files.select{ |filename| filename.include? ".java" }
@@ -202,7 +206,7 @@ def ast_processing
           prev_path = "#{BUILD_DIR}/" + prev.git_tag.to_s + "/src"
           curr_path = "#{BUILD_DIR}/" + curr.git_tag.to_s + "/src"
 
-          puts "File To Match" + filename
+          puts "File To Match" + filename if DEBUG
 
           if prev_filenames.include?(filename)
             if findChangeType(filename,prev_path,curr_path, session.language_framework) == "Production"
@@ -232,12 +236,14 @@ def ast_processing
         curr.prod_change = productionChanges
         curr.total_method_count
         curr.total_assert_count
-        puts "CURR SAVE"
+        puts "CURR SAVE" if DEBUG
         curr.save
-        puts "----------------------"
+        puts "----------------------" if DEBUG
         FileUtils.remove_entry_secure(BUILD_DIR)
       end
 
+      count += 1
+      print "\r " + dots(count)
     end
   end
 

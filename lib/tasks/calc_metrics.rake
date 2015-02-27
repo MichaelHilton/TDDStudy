@@ -14,7 +14,7 @@ require_relative root + '/lib/OsDisk'
 
 #include ASTInterface
 
-DEBUG = true
+DEBUG = false
 @TIME_CEILING = 1200 # Time Ceiling in Seconds Per Light
 
 def root_path
