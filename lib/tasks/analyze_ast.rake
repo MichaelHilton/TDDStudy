@@ -6,7 +6,6 @@ require_relative root + 'OsDisk'      # required for dojo definition
 require_relative root + 'Git'       # required for dojo definition
 require_relative root + 'DummyTestRunner' # required for dojo definition
 
-ALLOWED_LANGS = Set["Java-1.8_JUnit"]
 BUILD_DIR = 'ast_builds'
 
 def root_path
@@ -33,8 +32,6 @@ def defaultSetup(curr_path)
 
     templateProduction = "\npublic class Untitled {\n    \n    public static int answer() {\n        return 42;\n    }\n}\n"
     template_test = "import org.junit.*;\nimport static org.junit.Assert.*;\n\npublic class UntitledTest {\n    \n    @Test\n    public void hitch_hiker() {\n        int expected = 6 * 9;\n        int actual = Untitled.answer();\n        assertEquals(expected, actual);\n    }\n}\n"
-
-
 
     if(templateProduction == contents)
       if template_test == test_contents
@@ -73,19 +70,16 @@ def defaultSetup(curr_path)
 end
 
 
-def build_files(light)
+def build_files(light, language_framework)
   filenames = []
   filepaths = []
 
   #restrict to only lights that contain files
   if light
-    files = light.tag.visible_files.keys.select{ |filename| filename.include? ".java" }
+    files = light.tag.visible_files.keys.select{ |filename| filename.end_with? ALLOWED_LANGS[language_framework] }
     path = "#{BUILD_DIR}/" + light.number.to_s + "/src"
 
-    # puts "Path: " +path if DEBUG
     FileUtils.mkdir_p path, :mode => 0700
-
-    # puts Dir.pwd if DEBUG
 
     files.each do |file|
       if (light.tag.visible_files[file].length > 1)
@@ -94,7 +88,6 @@ def build_files(light)
 
         #save filenames and filepaths
         filenames << (file)
-        # puts path + "/" + file if DEBUG
         filepaths << (path + "/" + file)
       end
     end
@@ -104,7 +97,7 @@ def build_files(light)
 end
 
 
-desc "parse Java project files and git to determine # of methods and # of asserts at each compile"
+desc "parse project files and git to determine # of methods and # of asserts at each compile"
 task :analyze_ast => :environment do
   ast_processing
 end
@@ -114,12 +107,12 @@ def ast_processing
 
 
   #TO CLEAR UPDATE compiles SET test_change = null
+  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
+  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN markup_assignments as m on m.session_id = s.id").each do |session_id|
 
-  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
-  # INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
 
-  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id WHERE s.id = 1246").each do |session_id|
-  Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN markup_assignments as m on m.session_id = s.id").each do |session_id|
+
+  Session.find_by_sql("SELECT id,kata_name,cyberdojo_id,avatar FROM Sessions").each do |session_id|
 
     # Session.find_by_sql("Select * from Sessions as s
     # inner join compiles as c on s.id = c.session_id
@@ -144,8 +137,8 @@ def ast_processing
 
       # puts dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[0]
       firstCompile = session.compiles.first
-      curr_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[0])
-      curr_files = curr_files.select{ |filename| filename.include? ".java" }
+      curr_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[0], session.language_framework)
+      #curr_files = curr_files.select{ |filename| filename.include? ".java" }
       curr_filenames = curr_files.map{ |file| File.basename(file) }
 
       testChanges = false
@@ -164,14 +157,14 @@ def ast_processing
         curr_filenames.each do |filename|
 
           puts curr_path + "/" + filename if DEBUG
-          if findFileType(curr_path + "/" + filename) == "Production"
+          if findFileType(curr_path + "/" + filename, session.language_framework) == "Production"
             productionChanges = true
           end
-          if findFileType(curr_path + "/" + filename) == "Test"
+          if findFileType(curr_path + "/" + filename, session.language_framework) == "Test"
             testChanges = true
           end
-          firstCompile.total_method_count += findMethods(curr_path + "/" + filename)
-          firstCompile.total_assert_count += findAsserts(curr_path + "/" + filename)
+          firstCompile.total_method_count += findMethods(curr_path + "/" + filename, session.language_framework)
+          firstCompile.total_assert_count += findAsserts(curr_path + "/" + filename, session.language_framework)
         end
       end
       puts "testChanges: "+ testChanges.to_s if DEBUG
@@ -188,8 +181,8 @@ def ast_processing
       session.compiles.each_cons(2) do |prev, curr|
         puts "prev: " + prev.git_tag.to_s + " -> curr: " + curr.git_tag.to_s
 
-        prev_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[prev.git_tag-1])
-        curr_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[curr.git_tag-1])
+        prev_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[prev.git_tag-1], session.language_framework)
+        curr_files = build_files(dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[curr.git_tag-1], session.language_framework)
 
         puts curr_files.inspect
 
@@ -212,24 +205,24 @@ def ast_processing
           puts "File To Match" + filename
 
           if prev_filenames.include?(filename)
-            if findChangeType(filename,prev_path,curr_path) == "Production"
+            if findChangeType(filename,prev_path,curr_path, session.language_framework) == "Production"
               productionChanges = true
             end
-            if findChangeType(filename,prev_path,curr_path) == "Test"
+            if findChangeType(filename,prev_path,curr_path, session.language_framework) == "Test"
               testChanges = true
             end
           else
-            if findFileType(curr_path + "/" + filename) == "Production"
+            if findFileType(curr_path + "/" + filename, session.language_framework) == "Production"
               productionChanges = true
             end
-            if findFileType(curr_path + "/" + filename) == "Test"
+            if findFileType(curr_path + "/" + filename, session.language_framework) == "Test"
               testChanges = true
             end
           end
 
           #Calculate Number of methods and asserts
-          curr.total_method_count += findMethods(curr_path + "/" + filename)
-          curr.total_assert_count += findAsserts(curr_path + "/" + filename)
+          curr.total_method_count += findMethods(curr_path + "/" + filename, session.language_framework)
+          curr.total_assert_count += findAsserts(curr_path + "/" + filename, session.language_framework)
 
         end
         puts "testChanges: "+ testChanges.to_s if DEBUG
