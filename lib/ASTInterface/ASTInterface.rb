@@ -1,9 +1,13 @@
 require 'java'
 
 require_relative 'OptParserLib.rb'		# Command-line options parsing library
-require_relative 'JavaTestFinder.rb'	# JSON parser to evaluate test methods and assert invocations
+require_relative 'ASTUtil_Java.rb'    # JSON parser to evaluate Java methods and assert invocations
+require_relative 'ASTUtil_C.rb'       # JSON parser to evaluate C methods and assert invocations
 require_relative 'gumtreeFacade.jar'	# Facade to a subset of the Java Gumtree AST parser library
-require_relative 'gumtree.jar'			# Java Gumtree AST parser library (https://github.com/jrfaller/gumtree)
+require_relative 'gumtree.jar'        # Java Gumtree AST parser library (https://github.com/jrfaller/gumtree)
+
+ALLOWED_LANGS = Hash["Java-1.8_JUnit" => ".java"]
+#ALLOWED_LANGS = Hash["Java-1.8_JUnit" => ".java", "C-assert" => ".c"]
 
 @ast = Java::gumtreeFacade.AST
 # WARNING: the command-line options  for ASTInterface.rb require the following format:
@@ -43,18 +47,18 @@ def diffAST(src_path, dst_path)
 
 end
 
-def findChangeType(file_name,before_path,after_path)
+def findChangeType(file_name,before_path,after_path, language)
   diffASTResult = diffAST(before_path + "/" + file_name, after_path + "/" + file_name)
   if diffASTResult.length == 3
     return "NO Change"
   else
-    return findFileType(after_path + "/" + file_name)
+    return findFileType(after_path + "/" + file_name, language)
   end
 
 end
 
-def findFileType(file_path)
-  numAsserts = findAsserts(file_path)
+def findFileType(file_path, language)
+  numAsserts = findAsserts(file_path, language)
   if numAsserts > 0
     return "Test"
   else
@@ -63,8 +67,15 @@ def findFileType(file_path)
 
 end
 
-def findMethods(path)
-  searcher = JavaTestFinder.new()
+def findMethods(path, language)
+  case language
+  when "Java-1.8_JUnit"
+    searcher = Searcher_Java.new()
+  when "C-assert"
+    searcher = Searcher_C.new()
+  else
+    break
+  end
 
   file = File.open("temp.json", "w")
   file.puts treeAST(path)
@@ -77,8 +88,16 @@ def findMethods(path)
   return results
 end
 
-def findAsserts(path)
-  searcher = JavaTestFinder.new()
+def findAsserts(path, language)
+  case language
+  when "Java-1.8_JUnit"
+    searcher = Searcher_Java.new()
+  when "C-assert"
+    searcher = Searcher_C.new()
+  else
+    break
+  end
+  
   results = []
   file = File.open("temp.json", "w")
   treeString = treeAST(path)
