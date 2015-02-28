@@ -30,23 +30,40 @@ class CompletedController < ApplicationController
   end
 
   def mark_completed
+    @session_ids = Array.new
     @kata = params[:kata]
     allSessions = Session.where(language_framework: "Java-1.8_JUnit", kata_name: @kata, potential_complete: true)
     gon.allSessions = allSessions
 
+    allSessions.each do |key, array|
+      @session_ids.push(key)
+    end
+    gon.session_ids = @session_ids
+
   end
 
   def mark_kata
+    # Get this particular session
     id = params[:id]
-    currSession = Session.where(id: id).first
+    session = Session.where(id: id).first
 
-    puts currSession.inspect
-    puts currSession.cyberdojo_id
+    # Find id of next session
+    kata = params[:kata]
+    puts kata
+    all_session_ids = Array.new
+    all_sessions = Session.where(language_framework: "Java-1.8_JUnit", kata_name: kata, potential_complete: true)
+    all_sessions.each do |key, array|
+      all_session_ids.push(key.id)
+    end
+    next_id = all_session_ids.index(id.to_i) + 1
+    if not next_id.nil?
+      gon.next_id = all_session_ids.at(next_id)
+    end
 
-    allFiles = dojo.katas[currSession.cyberdojo_id].avatars[currSession.avatar].lights[currSession.total_light_count.to_i-1].tag.visible_files
+    allFiles = dojo.katas[session.cyberdojo_id].avatars[session.avatar].lights[session.total_light_count.to_i-1].tag.visible_files
 
     gon.allFiles = allFiles
-    gon.is_complete = currSession.is_complete
+    gon.is_complete = session.is_complete
 
   end
 

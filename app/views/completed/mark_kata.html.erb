@@ -155,6 +155,7 @@ Is Kata Complete?<br>
 <input type="radio" name="markup" value="" id="complete_un">Unmarked</input>
 <input type="radio" name="markup" value="Yes" id="complete_yes">Yes</input>
 <input type="radio" name="markup" value="No" id="complete_no">No</input>
+<button name="next" id="next">Next Kata</button>
 
 </h3>
 
@@ -166,6 +167,7 @@ Is Kata Complete?<br>
 <script>
 
 id = "<%= params[:id] %>";
+kata = "<%= params[:kata] %>";
 
 if (gon.is_complete) {
   $('#complete_yes').attr('checked', 'checked');
@@ -174,6 +176,14 @@ if (gon.is_complete) {
 } else {
   $('#complete_no').attr('checked', 'checked');
 }
+
+console.log("Next Session Id:");
+console.log(gon.next_id);
+
+$('#next').click(function() {
+  var newLocation = "mark_kata?id=" + gon.next_id + "&kata=" + kata;
+  window.location.href = newLocation;
+});
 
 $('input:radio[name="markup"]').change(
     function(){

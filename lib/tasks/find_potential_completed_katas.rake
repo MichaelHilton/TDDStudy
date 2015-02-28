@@ -10,8 +10,7 @@
 def find_potential_completed_katas
 
   Session.find_by_sql("SELECT * FROM sessions
-WHERE language_framework LIKE \"Java-1.8_JUnit\"
-AND kata_name LIKE \"Fizz_Buzz\"").each do |session|
+WHERE language_framework LIKE \"Java-1.8_JUnit\"").each do |session|
 
     puts "(((((((((((((((((( New Session ))))))))))))))))))))"
     puts session.inspect

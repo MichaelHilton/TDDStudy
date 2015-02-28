@@ -135,7 +135,8 @@ $('#myTable').on('click', 'td.mark_kata', function() {
   console.log("Mark Kata:");
   console.log($(this).parent());
   var id = $(this).parent().find(".id").html();
-  var newLocation = "mark_kata?id=" + id;
+  var kata_name = $(this).parent().find(".kata_name").html();
+  var newLocation = "mark_kata?id=" + id + "&kata=" + kata_name;
   window.open(newLocation);
 });
 
