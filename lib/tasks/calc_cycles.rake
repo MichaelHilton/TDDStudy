@@ -17,7 +17,6 @@ require_relative root + '/lib/ASTInterface/ASTInterface'
 
 
 CYCLE_DIAG = true
-ALLOWED_LANGS = Set["Java-1.8_JUnit"]
 
 
 def root_path
