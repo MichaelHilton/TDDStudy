@@ -105,23 +105,28 @@ class Searcher_C
   end
 
   def is_test(method)
+    method = find_direct_child(method, ->(x){is_method(x)})
     annotation = find_direct_child(method, ->(x){is_annotation(x)})
 
-    return false if annotation.nil?
+    return false if annotation.nil? or method.nil?
 
-    is_test_annotation(annotation) ? true : false
+    is_test_annotation(method, annotation) ? true : false
   end
 
-  def is_test_annotation(annotation)
+  def is_test_annotation(method, annotation)
+    declarationString = find_direct_child(method, ->(x){is_method(x)})
     annotationString = find_direct_child(annotation, ->(x){is_qualified_name(x)})
-    
+
     if annotationString.nil?
       annotationString = find_direct_child(annotation, ->(x){is_simple_name(x)})
     end
 
-    return false if annotationString.nil?
+    return false if declarationString.nil? or annotationString.nil?
 
-    annotationString["label"].include? "Test"
+    annotationResult = annotationString["label"].include? "[Test]"
+    declarationResult = declarationString["label"].include? "test"
+
+    (annotationResult || declarationResult) ? true : false
   end
 
   def is_method(node)

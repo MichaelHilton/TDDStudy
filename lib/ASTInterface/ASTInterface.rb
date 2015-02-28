@@ -3,10 +3,11 @@ require 'java'
 require_relative 'OptParserLib.rb'		# Command-line options parsing library
 require_relative 'ASTUtil_Java.rb'    # JSON parser to evaluate Java methods and assert invocations
 require_relative 'ASTUtil_C.rb'       # JSON parser to evaluate C methods and assert invocations
+require_relative 'ASTUtil_Ruby.rb'    # JSON parser to evaluate Ruby methods and assert invocations
 require_relative 'gumtreeFacade.jar'	# Facade to a subset of the Java Gumtree AST parser library
 require_relative 'gumtree.jar'        # Java Gumtree AST parser library (https://github.com/jrfaller/gumtree)
 
-ALLOWED_LANGS = Hash["Java-1.8_JUnit" => ".java"]
+ALLOWED_LANGS = Hash["Java-1.8_JUnit" => ".java", "Ruby-TestUnit" => ".rb"]
 #ALLOWED_LANGS = Hash["Java-1.8_JUnit" => ".java", "C-assert" => ".c"]
 
 @ast = Java::gumtreeFacade.AST
@@ -22,10 +23,10 @@ def treeAST(path)
   begin
     return @ast.getTreeAST(path)
   rescue java.lang.ArrayIndexOutOfBoundsException => e
-    puts "ERROR FOUND!!"
+    puts "treeAST ERROR: java.lang.ArrayIndexOutOfBoundsException received when processing path: #{path}"
     return "ERROR"
   rescue java.lang.NullPointerException => e
-    puts "ERROR FOUND!!"
+    puts "treeAST ERROR: java.lang.NullPointerException received when processing path: #{path}"
     return "ERROR"
   end
 end
@@ -38,10 +39,10 @@ def diffAST(src_path, dst_path)
   begin
     return @ast.getDiffAST(src_path, dst_path)
   rescue java.lang.ArrayIndexOutOfBoundsException => e
-    puts "ERROR FOUND!!"
+    puts "diffAST ERROR: java.lang.ArrayIndexOutOfBoundsException received when processing src_path: #{src_path}, dst_path: #{dst_path}"
     return "ERROR"
   rescue java.lang.NullPointerException => e
-    puts "ERROR FOUND!!"
+    puts "diffAST ERROR: java.lang.NullPointerException received when processing src_path: #{src_path}, dst_path: #{dst_path}"
     return "ERROR"
   end
 
@@ -73,12 +74,20 @@ def findMethods(path, language)
     searcher = Searcher_Java.new()
   when "C-assert"
     searcher = Searcher_C.new()
+  when "Ruby-TestUnit"
+    searcher = Searcher_Ruby.new()
   else
     break
   end
 
   file = File.open("temp.json", "w")
-  file.puts treeAST(path)
+  method_tree = treeAST(path)
+  if method_tree.include? "ERROR"
+    puts "findMethod returning empty JSON object file due to error state"
+    file.puts "{}"
+  else
+    file.puts method_tree
+  end
   file.close
   abs_path = File.absolute_path(file)
 
@@ -94,6 +103,8 @@ def findAsserts(path, language)
     searcher = Searcher_Java.new()
   when "C-assert"
     searcher = Searcher_C.new()
+  when "Ruby-TestUnit"
+    searcher = Searcher_Ruby.new()
   else
     break
   end

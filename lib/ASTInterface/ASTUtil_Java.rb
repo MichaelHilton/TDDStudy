@@ -5,6 +5,7 @@ class Searcher_Java
 
   def find_methods(filePath)
     json = get_json_from_file(filePath)
+    return 0 if json.length <= 2
 
     #find all methods
     found_methods = []
@@ -15,6 +16,7 @@ class Searcher_Java
 
   def find_method_invocations(filePath)
     json = get_json_from_file(filePath)
+    return 0 if json.length <= 2
 
     #find all method invocations
     method_invocations = []
@@ -27,6 +29,7 @@ class Searcher_Java
 
   def find_tests(filePath)
     json = get_json_from_file(filePath)
+    return 0 if json.length <= 2
 
     #find all methods
     found_methods = []
@@ -87,7 +90,8 @@ class Searcher_Java
   end
 
   def is_assert(invocation)
-    valid_assert_names = ["assertArrayEquals", "assertEquals", "assertFalse", "assertNotEquals", "assertNotNull", "assertNotSame", "assertNull", "assertSame", "assertThat", "assertTrue"]
+    valid_assert_names = ["assertArrayEquals", "assertEquals", "assertFalse", "assertNotEquals", "assertNotNull",
+                          "assertNotSame", "assertNull", "assertSame", "assertThat", "assertTrue"]
   	method_name = get_method_name(invocation)
 
   	is_valid = valid_assert_names.include? method_name

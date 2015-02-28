@@ -86,6 +86,7 @@ def build_files(light, language_framework)
     path = "#{BUILD_DIR}/" + light.number.to_s + "/src"
 
     FileUtils.mkdir_p path, :mode => 0700
+    #puts "created path: #{path}"
 
     files.each do |file|
       if (light.tag.visible_files[file].length > 1)
@@ -95,6 +96,8 @@ def build_files(light, language_framework)
         #save filenames and filepaths
         filenames << (file)
         filepaths << (path + "/" + file)
+
+        #puts "created file: #{path}/#{file}"
       end
     end
   end
@@ -112,26 +115,12 @@ def ast_processing
   count = 0
   FileUtils.mkdir_p BUILD_DIR, :mode => 0700
 
-  #TO CLEAR UPDATE compiles SET test_change = null
-  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
-  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN markup_assignments as m on m.session_id = s.id").each do |session_id|
-
   Session.find_by_sql("SELECT id,kata_name,cyberdojo_id,avatar FROM Sessions").each do |session_id|
-
-    # Session.find_by_sql("Select * from Sessions as s
-    # inner join compiles as c on s.id = c.session_id
-    # where  git_tag =1 AND language_framework LIKE \"Java-1.8_JUnit\";").each do |session_id|
-
-    # puts "SessionID: " + session_id.inspect
-    #   puts "SessionID: " + session_id.session_id.to_s
-    #   puts "SessionID: " + session_id["session_id"].to_s
 
     # limit to kata sessions that use supported language/testing frameworks
     # Session.where("language_framework = ?", ALLOWED_LANGS).find_each do |session|
     Session.where("id = ?", session_id.id).find_each do |session|
-      # Session.where("id = ?", 7871).find_each do |session|
-      # Session.includes(:compiles).where( :compiles => { :test_change => nil } ).find_each do |session|
-      # print "id: " + session.id.to_s + ", " if DEBUG
+      print "id: " + session.id.to_s + ", " if DEBUG
       print "cyberdojo_id: " + session.cyberdojo_id.to_s + ", " if DEBUG
       print "language: " + session.language_framework.to_s + ", " if DEBUG
       print "avatar: " + session.avatar.to_s + "\n" if DEBUG
@@ -181,7 +170,6 @@ def ast_processing
       firstCompile.save
       puts "----------------------" if DEBUG
 
-
       session.compiles.each_cons(2) do |prev, curr|
         puts "prev: " + prev.git_tag.to_s + " -> curr: " + curr.git_tag.to_s if DEBUG
 
@@ -190,9 +178,8 @@ def ast_processing
 
         puts curr_files.inspect if DEBUG
 
-
-        prev_files = prev_files.select{ |filename| filename.include? ".java" }
-        curr_files = curr_files.select{ |filename| filename.include? ".java" }
+        prev_files = prev_files.select{ |filename| filename.end_with? ALLOWED_LANGS[session.language_framework] }
+        curr_files = curr_files.select{ |filename| filename.end_with? ALLOWED_LANGS[session.language_framework] }
 
         prev_filenames = prev_files.map{ |file| File.basename(file) }
         curr_filenames = curr_files.map{ |file| File.basename(file) }
