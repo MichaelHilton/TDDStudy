@@ -17,7 +17,7 @@ def find_final_AST_node_size
 
   FileUtils.mkdir_p BUILD_DIR, :mode => 0700
 
-  Session.find_by_sql("SELECT * FROM Sessions as s WHERE language_framework LIKE \"Java-1.8_JUnit\" limit 30").each do |session|
+  Session.find_by_sql("SELECT * FROM Sessions as s WHERE language_framework LIKE \"Java-1.8_JUnit\"").each do |session|
     lastCompile = session.compiles.last
     puts lastCompile.inspect
 
