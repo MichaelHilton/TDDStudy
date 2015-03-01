@@ -27,8 +27,9 @@ def calc_cyclomatic_complexity
   Session.where(language_framework: "Java-1.8_JUnit").each do |session|
     # path = "#{BUILD_DIR}/" + light.number.to_s + "/src"
 
-    puts "*******************  NEW CYCLE  *******************"
-    puts session.inspect
+    # puts "*******************  NEW CYCLE  *******************"
+    # puts session.inspect
+    puts session.id.to_s
 
     lastCompile = session.compiles.last
     index = (session.compiles.count)-1
@@ -58,14 +59,14 @@ def calc_cyclomatic_complexity
         cycloText =  `./vendor/complexity/javancss -function  -package -xml #{file}`
         javaNCSSHash = Hash.from_xml(cycloText)
 
-        puts "^^^^^^^^^^^^^^^^^^^^^^javaNCSSHash[javancss]:^^^^^^^^^^^^^^^^^^^^^^"
+        # puts "^^^^^^^^^^^^^^^^^^^^^^javaNCSSHash[javancss]:^^^^^^^^^^^^^^^^^^^^^^"
         numberOfFunctions = 0
         avgCC = 0
         numberOfFunctions =  javaNCSSHash["javancss"]["packages"]["package"]["functions"]
         avgCC = javaNCSSHash["javancss"]["functions"]["function_averages"]["ccn"]
 
-        puts "numberOfFunctions:"+numberOfFunctions.to_s
-        puts "avgCC:"+avgCC.to_s
+        # puts "numberOfFunctions:"+numberOfFunctions.to_s
+        # puts "avgCC:"+avgCC.to_s
 
 
         if findFileType(file) == "Production"
