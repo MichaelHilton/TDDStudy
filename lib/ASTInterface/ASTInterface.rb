@@ -77,6 +77,21 @@ def findMethods(path)
   return results
 end
 
+def findAllNodeCount(path)
+  searcher = JavaTestFinder.new()
+
+  file = File.open("temp.json", "w")
+  file.puts treeAST(path)
+  file.close
+  abs_path = File.absolute_path(file)
+
+  results = searcher.find_all_nodes(abs_path)
+  File.delete(file)
+
+  return results
+end
+
+
 def findAsserts(path)
   searcher = JavaTestFinder.new()
   results = []
