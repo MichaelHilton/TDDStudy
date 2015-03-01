@@ -24,6 +24,9 @@ end
 
 def calc_cyclomatic_complexity
 
+  #add javancss to classpath.
+  # export CLASSPATH="$CLASSPATH:/home/tddstudy/TDDStudy/vendor/assets/jars/*"
+
   Session.where(language_framework: "Java-1.8_JUnit").each do |session|
     # path = "#{BUILD_DIR}/" + light.number.to_s + "/src"
 
@@ -58,25 +61,27 @@ def calc_cyclomatic_complexity
         # puts "./vendor/complexity/javancss -function  -package -xml #{file}"
         cycloText =  `./vendor/complexity/javancss -function  -package -xml #{file}`
         javaNCSSHash = Hash.from_xml(cycloText)
+        if javaNCSSHash.empty?
+        else
 
-        # puts "^^^^^^^^^^^^^^^^^^^^^^javaNCSSHash[javancss]:^^^^^^^^^^^^^^^^^^^^^^"
-        numberOfFunctions = 0
-        avgCC = 0
-        numberOfFunctions =  javaNCSSHash["javancss"]["packages"]["package"]["functions"]
-        avgCC = javaNCSSHash["javancss"]["functions"]["function_averages"]["ccn"]
+          # puts "^^^^^^^^^^^^^^^^^^^^^^javaNCSSHash[javancss]:^^^^^^^^^^^^^^^^^^^^^^"
+          numberOfFunctions = 0
+          avgCC = 0
+          numberOfFunctions =  javaNCSSHash["javancss"]["packages"]["package"]["functions"]
+          avgCC = javaNCSSHash["javancss"]["functions"]["function_averages"]["ccn"]
 
-        # puts "numberOfFunctions:"+numberOfFunctions.to_s
-        # puts "avgCC:"+avgCC.to_s
+          # puts "numberOfFunctions:"+numberOfFunctions.to_s
+          # puts "avgCC:"+avgCC.to_s
 
 
-        if findFileType(file) == "Production"
-          # puts "Production"
-          prevProdCC = avgProdCC
-          # puts "totalProdMethods:"+ totalProdMethods.to_s
-          # puts "numberOfFunctions:"+ numberOfFunctions.to_s
-          # puts "avgProdCC:"+ avgProdCC.to_s
-          # puts "avgCC:"+ avgCC.to_s
-          avgProdCC = ((avgProdCC.to_f * totalProdMethods.to_f) + (avgCC.to_f*numberOfFunctions.to_f))/(totalProdMethods.to_f + numberOfFunctions.to_f)
+          if findFileType(file) == "Production"
+            # puts "Production"
+            prevProdCC = avgProdCC
+            # puts "totalProdMethods:"+ totalProdMethods.to_s
+            # puts "numberOfFunctions:"+ numberOfFunctions.to_s
+            # puts "avgProdCC:"+ avgProdCC.to_s
+            # puts "avgCC:"+ avgCC.to_s
+            avgProdCC = ((avgProdCC.to_f * totalProdMethods.to_f) + (avgCC.to_f*numberOfFunctions.to_f))/(totalProdMethods.to_f + numberOfFunctions.to_f)
           totalProdMethods += numberOfFunctions.to_i
           # puts "avgProdCC:"+avgProdCC.to_s
           # puts "totalProdMethods:"+totalProdMethods.to_s
@@ -85,11 +90,11 @@ def calc_cyclomatic_complexity
           # puts "Test"
           prevTestCC = avgTestCC
           avgTestCC = ((avgTestCC.to_f * totalTestMethods.to_f) + (avgCC.to_f*numberOfFunctions.to_f))/(totalTestMethods.to_f + numberOfFunctions.to_f)
-          totalTestMethods += numberOfFunctions.to_i
-          # puts "avgTestCC:"+avgTestCC.to_s
-          # puts "totalTestMethods:"+totalTestMethods.to_s
+            totalTestMethods += numberOfFunctions.to_i
+            # puts "avgTestCC:"+avgTestCC.to_s
+            # puts "totalTestMethods:"+totalTestMethods.to_s
+          end
         end
-
       end
     end
 
