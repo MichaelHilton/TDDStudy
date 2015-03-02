@@ -61,9 +61,7 @@ def calc_cyclomatic_complexity
         # puts "./vendor/complexity/javancss -function  -package -xml #{file}"
         cycloText =  `./vendor/complexity/javancss -function  -package -xml #{file}`
         javaNCSSHash = Hash.from_xml(cycloText)
-        if javaNCSSHash.empty?
-        else
-
+        if javaNCSSHash
           # puts "^^^^^^^^^^^^^^^^^^^^^^javaNCSSHash[javancss]:^^^^^^^^^^^^^^^^^^^^^^"
           numberOfFunctions = 0
           avgCC = 0
@@ -98,7 +96,11 @@ def calc_cyclomatic_complexity
       end
     end
 
-    total_avg_cc = ((avgTestCC * totalTestMethods)+(avgProdCC * totalProdMethods))/(totalProdMethods + totalTestMethods)
+    if totalTestMethods > 0 || totalProdMethods > 0
+      total_avg_cc = ((avgTestCC * totalTestMethods)+(avgProdCC * totalProdMethods))/(totalProdMethods + totalTestMethods)
+    else
+      total_avg_cc = 0
+    end
 
     # puts "production_cc: " + avgProdCC.to_s
     # puts "test_cc: "+ avgTestCC.to_s
