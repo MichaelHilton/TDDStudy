@@ -96,11 +96,21 @@ def calc_cyclomatic_complexity
       end
     end
 
+    if avgProdCC.nan?
+      avgProdCC = 0
+    end
+    if avgTestCC.nan?
+      avgTestCC = 0
+    end
+
     if totalTestMethods > 0 || totalProdMethods > 0
       total_avg_cc = ((avgTestCC * totalTestMethods)+(avgProdCC * totalProdMethods))/(totalProdMethods + totalTestMethods)
     else
       total_avg_cc = 0
     end
+
+
+
 
     # puts "production_cc: " + avgProdCC.to_s
     # puts "test_cc: "+ avgTestCC.to_s
