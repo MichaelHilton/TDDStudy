@@ -48,10 +48,10 @@ def calc_cyclomatic_complexity
     cycloText = ""
 
 
-    totalProdMethods = 0
-    totalTestMethods = 0
-    avgProdCC = 0
-    avgTestCC = 0
+    totalProdMethods = 0.0
+    totalTestMethods = 0.0
+    avgProdCC = 0.0
+    avgTestCC = 0.0
     javaNCSSHash = nil
 
     Dir.entries(path).each do |currFile|
