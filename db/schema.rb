@@ -11,7 +11,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150303193804) do
+ActiveRecord::Schema.define(version: 20150304035437) do
+
+  create_table "AST_tree_nodes", force: true do |t|
+    t.integer  "AST_trees_id"
+    t.string   "type"
+    t.string   "label"
+    t.string   "typeLabel"
+    t.integer  "pos"
+    t.string   "length"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_tree_nodes", ["AST_trees_id"], name: "index_AST_tree_nodes_on_AST_trees_id"
+
+  create_table "AST_tree_relationships", force: true do |t|
+    t.integer  "parent_id"
+    t.integer  "child_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "AST_trees", force: true do |t|
+    t.integer  "session_id"
+    t.string   "filename"
+    t.integer  "git_tag"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_trees", ["session_id"], name: "index_AST_trees_on_session_id"
 
   create_table "compiles", force: true do |t|
     t.integer  "phase_id"
