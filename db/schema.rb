@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150228234220) do
+ActiveRecord::Schema.define(version: 20150303193804) do
 
   create_table "compiles", force: true do |t|
     t.integer  "phase_id"
@@ -35,6 +35,8 @@ ActiveRecord::Schema.define(version: 20150228234220) do
     t.datetime "updated_at"
     t.integer  "total_method_count"
     t.integer  "total_assert_count"
+    t.binary   "curr_AST_Tree",                limit: 1048576
+    t.binary   "curr_AST_Diff",                limit: 1048576
   end
 
   add_index "compiles", ["phase_id"], name: "index_compiles_on_phase_id"

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Tree Example</title>
+
+    <style>
+  
+  .node {
+    cursor: pointer;
+  }
+
+  .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+  }
+
+  .node text {
+    font: 12px sans-serif;
+  }
+
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+  }
+  
+    </style>
+
+  </head>
+
+  <body>
+
+<!-- load the d3.js library --> 
+<script src="http://d3js.org/d3.v3.min.js"></script>
+  
+<script>
+
+var treeData =      //JSON object with the data
+[{
+  "type": "15",
+  "typeLabel": "CompilationUnit",
+  "pos": "0",
+  "length": "693",
+  "children": [
+    {
+      "type": "55",
+      "typeLabel": "TypeDeclaration",
+      "pos": "1",
+      "length": "692",
+      "children": [
+        {
+          "type": "83",
+          "label": "public",
+          "typeLabel": "Modifier",
+          "pos": "1",
+          "length": "6",
+          "children": []
+        },
+        {
+          "type": "42",
+          "label": "FizzBuzz",
+          "typeLabel": "SimpleName",
+          "pos": "14",
+          "length": "8",
+          "children": []
+        },
+        {
+          "type": "31",
+          "typeLabel": "MethodDeclaration",
+          "pos": "30",
+          "length": "660",
+          "children": [
+            {
+              "type": "83",
+              "label": "public",
+              "typeLabel": "Modifier",
+              "pos": "30",
+              "length": "6",
+              "children": []
+            },
+            {
+              "type": "43",
+              "label": "String",
+              "typeLabel": "SimpleType",
+              "pos": "37",
+              "length": "6",
+              "children": [
+                {
+                  "type": "42",
+                  "label": "String",
+                  "typeLabel": "SimpleName",
+                  "pos": "37",
+                  "length": "6",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "type": "42",
+              "label": "get",
+              "typeLabel": "SimpleName",
+              "pos": "44",
+              "length": "3",
+              "children": []
+            },
+            {
+              "type": "44",
+              "typeLabel": "SingleVariableDeclaration",
+              "pos": "48",
+              "length": "10",
+              "children": [
+                {
+                  "type": "39",
+                  "label": "int",
+                  "typeLabel": "PrimitiveType",
+                  "pos": "48",
+                  "length": "3",
+                  "children": []
+                },
+                {
+                  "type": "42",
+                  "label": "number",
+                  "typeLabel": "SimpleName",
+                  "pos": "52",
+                  "length": "6",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "type": "8",
+              "typeLabel": "Block",
+              "pos": "60",
+              "length": "630",
+              "children": [
+                {
+                  "type": "60",
+                  "typeLabel": "VariableDeclarationStatement",
+                  "pos": "75",
+                  "length": "40",
+                  "children": [
+                    {
+                      "type": "39",
+                      "label": "boolean",
+                      "typeLabel": "PrimitiveType",
+                      "pos": "75",
+                      "length": "7",
+                      "children": []
+                    },
+                    {
+                      "type": "59",
+                      "typeLabel": "VariableDeclarationFragment",
+                      "pos": "83",
+                      "length": "31",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "can_multiple3",
+                          "typeLabel": "SimpleName",
+                          "pos": "83",
+                          "length": "13",
+                          "children": []
+                        },
+                        {
+                          "type": "36",
+                          "typeLabel": "ParenthesizedExpression",
+                          "pos": "99",
+                          "length": "15",
+                          "children": [
+                            {
+                              "type": "27",
+                              "label": "==",
+                              "typeLabel": "InfixExpression",
+                              "pos": "100",
+                              "length": "13",
+                              "children": [
+                                {
+                                  "type": "27",
+                                  "label": "%",
+                                  "typeLabel": "InfixExpression",
+                                  "pos": "100",
+                                  "length": "8",
+                                  "children": [
+                                    {
+                                      "type": "42",
+                                      "label": "number",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "100",
+                                      "length": "6",
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "34",
+                                      "label": "3",
+                                      "typeLabel": "NumberLiteral",
+                                      "pos": "107",
+                                      "length": "1",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "34",
+                                  "label": "0",
+                                  "typeLabel": "NumberLiteral",
+                                  "pos": "112",
+                                  "length": "1",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "60",
+                  "typeLabel": "VariableDeclarationStatement",
+                  "pos": "124",
+                  "length": "40",
+                  "children": [
+                    {
+                      "type": "39",
+                      "label": "boolean",
+                      "typeLabel": "PrimitiveType",
+                      "pos": "124",
+                      "length": "7",
+                      "children": []
+                    },
+                    {
+                      "type": "59",
+                      "typeLabel": "VariableDeclarationFragment",
+                      "pos": "132",
+                      "length": "31",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "can_multiple5",
+                          "typeLabel": "SimpleName",
+                          "pos": "132",
+                          "length": "13",
+                          "children": []
+                        },
+                        {
+                          "type": "36",
+                          "typeLabel": "ParenthesizedExpression",
+                          "pos": "148",
+                          "length": "15",
+                          "children": [
+                            {
+                              "type": "27",
+                              "label": "==",
+                              "typeLabel": "InfixExpression",
+                              "pos": "149",
+                              "length": "13",
+                              "children": [
+                                {
+                                  "type": "27",
+                                  "label": "%",
+                                  "typeLabel": "InfixExpression",
+                                  "pos": "149",
+                                  "length": "8",
+                                  "children": [
+                                    {
+                                      "type": "42",
+                                      "label": "number",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "149",
+                                      "length": "6",
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "34",
+                                      "label": "5",
+                                      "typeLabel": "NumberLiteral",
+                                      "pos": "156",
+                                      "length": "1",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "34",
+                                  "label": "0",
+                                  "typeLabel": "NumberLiteral",
+                                  "pos": "161",
+                                  "length": "1",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "60",
+                  "typeLabel": "VariableDeclarationStatement",
+                  "pos": "173",
+                  "length": "40",
+                  "children": [
+                    {
+                      "type": "39",
+                      "label": "boolean",
+                      "typeLabel": "PrimitiveType",
+                      "pos": "173",
+                      "length": "7",
+                      "children": []
+                    },
+                    {
+                      "type": "59",
+                      "typeLabel": "VariableDeclarationFragment",
+                      "pos": "181",
+                      "length": "31",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "can_multiple7",
+                          "typeLabel": "SimpleName",
+                          "pos": "181",
+                          "length": "13",
+                          "children": []
+                        },
+                        {
+                          "type": "36",
+                          "typeLabel": "ParenthesizedExpression",
+                          "pos": "197",
+                          "length": "15",
+                          "children": [
+                            {
+                              "type": "27",
+                              "label": "==",
+                              "typeLabel": "InfixExpression",
+                              "pos": "198",
+                              "length": "13",
+                              "children": [
+                                {
+                                  "type": "27",
+                                  "label": "%",
+                                  "typeLabel": "InfixExpression",
+                                  "pos": "198",
+                                  "length": "8",
+                                  "children": [
+                                    {
+                                      "type": "42",
+                                      "label": "number",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "198",
+                                      "length": "6",
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "34",
+                                      "label": "7",
+                                      "typeLabel": "NumberLiteral",
+                                      "pos": "205",
+                                      "length": "1",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "34",
+                                  "label": "0",
+                                  "typeLabel": "NumberLiteral",
+                                  "pos": "210",
+                                  "length": "1",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "60",
+                  "typeLabel": "VariableDeclarationStatement",
+                  "pos": "223",
+                  "length": "45",
+                  "children": [
+                    {
+                      "type": "43",
+                      "label": "String",
+                      "typeLabel": "SimpleType",
+                      "pos": "223",
+                      "length": "6",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "String",
+                          "typeLabel": "SimpleName",
+                          "pos": "223",
+                          "length": "6",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "59",
+                      "typeLabel": "VariableDeclarationFragment",
+                      "pos": "230",
+                      "length": "37",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "230",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "32",
+                          "typeLabel": "MethodInvocation",
+                          "pos": "245",
+                          "length": "22",
+                          "children": [
+                            {
+                              "type": "42",
+                              "label": "String",
+                              "typeLabel": "SimpleName",
+                              "pos": "245",
+                              "length": "6",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "valueOf",
+                              "typeLabel": "SimpleName",
+                              "pos": "252",
+                              "length": "7",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "number",
+                              "typeLabel": "SimpleName",
+                              "pos": "260",
+                              "length": "6",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "21",
+                  "typeLabel": "ExpressionStatement",
+                  "pos": "278",
+                  "length": "56",
+                  "children": [
+                    {
+                      "type": "7",
+                      "label": "=",
+                      "typeLabel": "Assignment",
+                      "pos": "278",
+                      "length": "54",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "278",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "16",
+                          "typeLabel": "ConditionalExpression",
+                          "pos": "293",
+                          "length": "39",
+                          "children": [
+                            {
+                              "type": "36",
+                              "typeLabel": "ParenthesizedExpression",
+                              "pos": "293",
+                              "length": "15",
+                              "children": [
+                                {
+                                  "type": "42",
+                                  "label": "can_multiple3",
+                                  "typeLabel": "SimpleName",
+                                  "pos": "294",
+                                  "length": "13",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "type": "45",
+                              "label": "\"Fizz\"",
+                              "typeLabel": "StringLiteral",
+                              "pos": "311",
+                              "length": "6",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "returnResult",
+                              "typeLabel": "SimpleName",
+                              "pos": "320",
+                              "length": "12",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "21",
+                  "typeLabel": "ExpressionStatement",
+                  "pos": "352",
+                  "length": "56",
+                  "children": [
+                    {
+                      "type": "7",
+                      "label": "=",
+                      "typeLabel": "Assignment",
+                      "pos": "352",
+                      "length": "54",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "352",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "16",
+                          "typeLabel": "ConditionalExpression",
+                          "pos": "367",
+                          "length": "39",
+                          "children": [
+                            {
+                              "type": "36",
+                              "typeLabel": "ParenthesizedExpression",
+                              "pos": "367",
+                              "length": "15",
+                              "children": [
+                                {
+                                  "type": "42",
+                                  "label": "can_multiple5",
+                                  "typeLabel": "SimpleName",
+                                  "pos": "368",
+                                  "length": "13",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "type": "45",
+                              "label": "\"Buzz\"",
+                              "typeLabel": "StringLiteral",
+                              "pos": "385",
+                              "length": "6",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "returnResult",
+                              "typeLabel": "SimpleName",
+                              "pos": "394",
+                              "length": "12",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "21",
+                  "typeLabel": "ExpressionStatement",
+                  "pos": "426",
+                  "length": "56",
+                  "children": [
+                    {
+                      "type": "7",
+                      "label": "=",
+                      "typeLabel": "Assignment",
+                      "pos": "426",
+                      "length": "54",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "426",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "16",
+                          "typeLabel": "ConditionalExpression",
+                          "pos": "441",
+                          "length": "39",
+                          "children": [
+                            {
+                              "type": "36",
+                              "typeLabel": "ParenthesizedExpression",
+                              "pos": "441",
+                              "length": "15",
+                              "children": [
+                                {
+                                  "type": "42",
+                                  "label": "can_multiple7",
+                                  "typeLabel": "SimpleName",
+                                  "pos": "442",
+                                  "length": "13",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "type": "45",
+                              "label": "\"Guzz\"",
+                              "typeLabel": "StringLiteral",
+                              "pos": "459",
+                              "length": "6",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "returnResult",
+                              "typeLabel": "SimpleName",
+                              "pos": "468",
+                              "length": "12",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "21",
+                  "typeLabel": "ExpressionStatement",
+                  "pos": "492",
+                  "length": "76",
+                  "children": [
+                    {
+                      "type": "7",
+                      "label": "=",
+                      "typeLabel": "Assignment",
+                      "pos": "492",
+                      "length": "75",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "492",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "16",
+                          "typeLabel": "ConditionalExpression",
+                          "pos": "507",
+                          "length": "60",
+                          "children": [
+                            {
+                              "type": "36",
+                              "typeLabel": "ParenthesizedExpression",
+                              "pos": "507",
+                              "length": "32",
+                              "children": [
+                                {
+                                  "type": "27",
+                                  "label": "&&",
+                                  "typeLabel": "InfixExpression",
+                                  "pos": "508",
+                                  "length": "30",
+                                  "children": [
+                                    {
+                                      "type": "42",
+                                      "label": "can_multiple3",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "508",
+                                      "length": "13",
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "42",
+                                      "label": "can_multiple5",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "525",
+                                      "length": "13",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "45",
+                              "label": "\"FizzBuzz\"",
+                              "typeLabel": "StringLiteral",
+                              "pos": "542",
+                              "length": "10",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "returnResult",
+                              "typeLabel": "SimpleName",
+                              "pos": "555",
+                              "length": "12",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "21",
+                  "typeLabel": "ExpressionStatement",
+                  "pos": "578",
+                  "length": "76",
+                  "children": [
+                    {
+                      "type": "7",
+                      "label": "=",
+                      "typeLabel": "Assignment",
+                      "pos": "578",
+                      "length": "75",
+                      "children": [
+                        {
+                          "type": "42",
+                          "label": "returnResult",
+                          "typeLabel": "SimpleName",
+                          "pos": "578",
+                          "length": "12",
+                          "children": []
+                        },
+                        {
+                          "type": "16",
+                          "typeLabel": "ConditionalExpression",
+                          "pos": "593",
+                          "length": "60",
+                          "children": [
+                            {
+                              "type": "36",
+                              "typeLabel": "ParenthesizedExpression",
+                              "pos": "593",
+                              "length": "32",
+                              "children": [
+                                {
+                                  "type": "27",
+                                  "label": "&&",
+                                  "typeLabel": "InfixExpression",
+                                  "pos": "594",
+                                  "length": "30",
+                                  "children": [
+                                    {
+                                      "type": "42",
+                                      "label": "can_multiple3",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "594",
+                                      "length": "13",
+                                      "children": []
+                                    },
+                                    {
+                                      "type": "42",
+                                      "label": "can_multiple7",
+                                      "typeLabel": "SimpleName",
+                                      "pos": "611",
+                                      "length": "13",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "45",
+                              "label": "\"FizzGuzz\"",
+                              "typeLabel": "StringLiteral",
+                              "pos": "628",
+                              "length": "10",
+                              "children": []
+                            },
+                            {
+                              "type": "42",
+                              "label": "returnResult",
+                              "typeLabel": "SimpleName",
+                              "pos": "641",
+                              "length": "12",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "41",
+                  "typeLabel": "ReturnStatement",
+                  "pos": "664",
+                  "length": "20",
+                  "children": [
+                    {
+                      "type": "42",
+                      "label": "returnResult",
+                      "typeLabel": "SimpleName",
+                      "pos": "671",
+                      "length": "12",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}];
+
+
+// ************** Generate the tree diagram  *****************
+var margin = {top: 20, right: 120, bottom: 20, left: 120},
+  width = 1960 - margin.right - margin.left,
+  height = 500 - margin.top - margin.bottom;
+  
+var i = 0,
+  duration = 750,
+  root;
+
+var tree = d3.layout.tree()
+  .size([height, width]);
+
+var diagonal = d3.svg.diagonal()
+  .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("body").append("svg")
+  .attr("width", width + margin.right + margin.left)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+root = treeData[0];
+root.x0 = height / 2;
+root.y0 = 0;
+  
+update(root);
+
+d3.select(self.frameElement).style("height", "500px");
+
+function update(source) {
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+    links = tree.links(nodes);
+
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+  // Update the nodes…
+  var node = svg.selectAll("g.node")
+    .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+    .on("click", click);
+
+  nodeEnter.append("circle")
+    .attr("r", 1e-6)
+    .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeEnter.append("text")
+    .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
+    .attr("dy", ".35em")
+    .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+    .text(function(d) {
+      if(d.label == undefined){
+return d.pos +":"+ d.type +":"+ d.typeLabel; 
+      }else{
+        return d.pos +":"+ d.type +":"+ d.typeLabel + ":" + d.label; 
+      }
+     
+   })
+    .style("fill-opacity", 1e-6);
+
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+    .duration(duration)
+    .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+  nodeUpdate.select("circle")
+    .attr("r", 10)
+    .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeUpdate.select("text")
+    .style("fill-opacity", 1);
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+    .duration(duration)
+    .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+    .remove();
+
+  nodeExit.select("circle")
+    .attr("r", 1e-6);
+
+  nodeExit.select("text")
+    .style("fill-opacity", 1e-6);
+
+  // Update the links…
+  var link = svg.selectAll("path.link")
+    .data(links, function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+    .attr("class", "link")
+    .attr("d", function(d) {
+    var o = {x: source.x0, y: source.y0};
+    return diagonal({source: o, target: o});
+    });
+
+  // Transition links to their new position.
+  link.transition()
+    .duration(duration)
+    .attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+    .duration(duration)
+    .attr("d", function(d) {
+    var o = {x: source.x, y: source.y};
+    return diagonal({source: o, target: o});
+    })
+    .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+  d.x0 = d.x;
+  d.y0 = d.y;
+  });
+}
+
+// Toggle children on click.
+function click(d) {
+  if (d.children) {
+  d._children = d.children;
+  d.children = null;
+  } else {
+  d.children = d._children;
+  d._children = null;
+  }
+  update(d);
+}
+
+</script>
+  
+  </body>
+</html>
