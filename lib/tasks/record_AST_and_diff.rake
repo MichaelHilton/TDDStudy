@@ -44,6 +44,7 @@ def store_AST_Tree(session_id,curr_path,filename,git_tag)
   currAstTreeNode.type = json_ast_string["type"]
   currAstTreeNode.typeLabel = json_ast_string["typeLabel"]
   currAstTreeNode.pos = json_ast_string["pos"]
+  currAstTreeNode.label = json_ast_string["label"]
   currAstTreeNode.length = json_ast_string["length"]
   currAstTreeNode.AST_trees_id = ast_tree.id
   currAstTreeNode.save
@@ -65,12 +66,20 @@ def saveChildrenToDB(childrenArray,parent,astTree)
     currAstTreeNode = AstTreeNode.new
     currAstTreeNode.type = child["type"]
     currAstTreeNode.typeLabel = child["typeLabel"]
+    currAstTreeNode.label = child["label"]
     currAstTreeNode.pos = child["pos"]
     currAstTreeNode.length = child["length"]
     currAstTreeNode.AST_trees_id = astTree.id
     currAstTreeNode.save
 
+    astTreeRel = AstTreeRelationships.new
+    astTreeRel.parent_id = parent.id
+    astTreeRel.child_id = currAstTreeNode.id
+    astTreeRel.save
     puts child.inspect
+
+    saveChildrenToDB(child["children"],currAstTreeNode,astTree)
+
 
   end
 
@@ -83,6 +92,7 @@ def record_AST_and_diff
 
   AstTree.delete_all
   AstTreeNode.delete_all
+  AstTreeRelationships.delete_all
 
   Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
   INNER JOIN interrater_sessions as i on i.session_id = s.id WHERE s.id = 2456").each do |session|
