@@ -41,11 +41,11 @@ def store_AST_Tree(session_id,curr_path,filename,git_tag)
 
 
   currAstTreeNode = AstTreeNode.new
-  currAstTreeNode.type = json_ast_string["type"]
-  currAstTreeNode.typeLabel = json_ast_string["typeLabel"]
-  currAstTreeNode.pos = json_ast_string["pos"]
-  currAstTreeNode.label = json_ast_string["label"]
-  currAstTreeNode.length = json_ast_string["length"]
+  currAstTreeNode.astType = json_ast_string["type"]
+  currAstTreeNode.astTypeLabel = json_ast_string["typeLabel"]
+  currAstTreeNode.astPos = json_ast_string["pos"]
+  currAstTreeNode.astLabel = json_ast_string["label"]
+  currAstTreeNode.astLength = json_ast_string["length"]
   currAstTreeNode.AST_trees_id = ast_tree.id
   currAstTreeNode.save
 
@@ -59,16 +59,16 @@ end
 
 def saveChildrenToDB(childrenArray,parent,astTree)
   puts "========== CHILD =========="
-  # puts childrenArray.inspect
-  # puts childrenArray
+  puts childrenArray.inspect
+  puts childrenArray
   childrenArray.each do |child|
     puts "========== CHILD =========="
     currAstTreeNode = AstTreeNode.new
-    currAstTreeNode.type = child["type"]
-    currAstTreeNode.typeLabel = child["typeLabel"]
-    currAstTreeNode.label = child["label"]
-    currAstTreeNode.pos = child["pos"]
-    currAstTreeNode.length = child["length"]
+    currAstTreeNode.astType = child["type"]
+    currAstTreeNode.astTypeLabel = child["typeLabel"]
+    currAstTreeNode.astLabel = child["label"]
+    currAstTreeNode.astPos = child["pos"]
+    currAstTreeNode.astLength = child["length"]
     currAstTreeNode.AST_trees_id = astTree.id
     currAstTreeNode.save
 

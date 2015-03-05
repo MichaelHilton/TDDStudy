@@ -9,11 +9,11 @@ class AddAstTables < ActiveRecord::Migration
 
     create_table :AST_tree_nodes do |t|
       t.references :AST_trees, index: true
-      t.string :type
-      t.string :label
-      t.string :typeLabel
-      t.integer :pos
-      t.string :length
+      t.string :astType
+      t.string :astLabel
+      t.string :astTypeLabel
+      t.integer :astPos
+      t.string :astLength
       t.timestamps
     end
 

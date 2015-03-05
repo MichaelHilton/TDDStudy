@@ -11,4 +11,5 @@ class AstTreeNode < ActiveRecord::Base
 
   #   # an example of how to get only the unauthorized friends
   #   has_many :unauthorized_friends, :through => :friendships, :source => :friend, :conditions => [ "authorized = ?", false ]
+
 end

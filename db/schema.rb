@@ -15,11 +15,11 @@ ActiveRecord::Schema.define(version: 20150304035437) do
 
   create_table "AST_tree_nodes", force: true do |t|
     t.integer  "AST_trees_id"
-    t.string   "type"
-    t.string   "label"
-    t.string   "typeLabel"
-    t.integer  "pos"
-    t.string   "length"
+    t.string   "astType"
+    t.string   "astLabel"
+    t.string   "astTypeLabel"
+    t.integer  "astPos"
+    t.string   "astLength"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
