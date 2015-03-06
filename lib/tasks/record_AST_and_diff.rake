@@ -50,10 +50,6 @@ def store_AST_Tree(session_id,curr_path,filename,git_tag)
   currAstTreeNode.save
 
   saveChildrenToDB(json_ast_string["children"],currAstTreeNode,ast_tree)
-
-
-
-
 end
 
 
@@ -79,12 +75,61 @@ def saveChildrenToDB(childrenArray,parent,astTree)
     puts child.inspect
 
     saveChildrenToDB(child["children"],currAstTreeNode,astTree)
+  end
+end
+
+
+def saveASTChanges(ast_JSON_string,session_id,git_tag,filename)
+  puts "================ saveASTChanges ================"
+  # puts "ast_JSON_string: "+ ast_JSON_string
+  json_diff_nodes = JSON.parse(ast_JSON_string)
+  json_diff_nodes.each do |ast_diff_node|
+
+    puts "^^^^^^^^^^^^^^^^^^^^ AST DIFF NODE ^^^^^^^^^^^^^^^^^^^^"
+    puts ast_diff_node.inspect
+    currASTDiffNode = AstDiffNode.new
+    currASTDiffNode.diffActionType = ast_diff_node["action_type"]
+    currASTDiffNode.diffObjectType = ast_diff_node["object"]["type"]
+    currASTDiffNode.diffObjectLabel = ast_diff_node["object"]["label"]
+    currASTDiffNode.diffBeforePos = ast_diff_node["before"]["pos"]
+    currASTDiffNode.diffBeforeLength = ast_diff_node["before"]["length"]
+    if ast_diff_node["after"]
+      currASTDiffNode.diffAfterPos = ast_diff_node["after"]["pos"]
+      currASTDiffNode.diffAfterLength = ast_diff_node["after"]["length"]
+    end
+
+    puts session_id
+    puts git_tag
+    puts filename
+    currASTTree = AstTree.find_by(session_id: session_id,git_tag: git_tag, filename: filename)
+
+    puts currASTTree.inspect
+
+    currASTDiffNode.AST_trees_id = currASTTree.id
+
+
+    currASTDiffNode.save
+
+
+    # t.string :diffActionType
+    # t.string :diffObjectType
+    # t.string :diffObjectLabel
+    # t.string :diffParentType
+    # t.integer :diffBeforePos
+    # t.integer :diffBeforeLength
+    # t.integer :diffAfterPos
+    # t.integer :diffAfterLength
+    # t.integer :groupLeadNode
+    # t.integer :groupParentNode
+    # t.integer :groupNumber
 
 
   end
 
-end
 
+  # AstDiffNode
+
+end
 
 
 
@@ -93,13 +138,14 @@ def record_AST_and_diff
   AstTree.delete_all
   AstTreeNode.delete_all
   AstTreeRelationships.delete_all
+  AstDiffNode.delete_all
 
   Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
   INNER JOIN interrater_sessions as i on i.session_id = s.id WHERE s.id = 2456").each do |session|
 
     # @currSession = session
     puts session.inspect
-    session.compiles.limit(1).each_with_index do |compile, index|
+    session.compiles.each_with_index do |compile, index|
       puts "compile.git_tag: "+ compile.git_tag.to_s
       puts "index: "+ index.to_s
 
@@ -117,12 +163,37 @@ def record_AST_and_diff
         store_AST_Tree(session.id,curr_path,filename,compile.git_tag)
       end
     end
-  end
 
-  # Session.find_by_sql("SELECT * FROM Sessions as s
-  #  WHERE s.id = 2456").each do |session|
-  #   session.ast_trees.each do |curr_astTree|
-  #     puts curr_astTree.inspect
-  #   end
-  # end
+    session.compiles.each_cons(2) do |prev, curr|
+      puts "prev: " + prev.git_tag.to_s + " -> curr: " + curr.git_tag.to_s
+
+      prev_files = Dir.entries("#{BUILD_DIR}/" + prev.git_tag.to_s + "/src")
+      curr_files = Dir.entries("#{BUILD_DIR}/" + curr.git_tag.to_s + "/src")
+
+      prev_files = prev_files.select{ |filename| filename.include? ".java" }
+      curr_files = curr_files.select{ |filename| filename.include? ".java" }
+
+      prev_filenames = prev_files.map{ |file| File.basename(file) }
+      curr_filenames = curr_files.map{ |file| File.basename(file) }
+
+      # puts "prev_filenames: "+ prev_filenames.inspect
+      # puts "curr_filenames: "+ curr_filenames.inspect
+
+
+      curr_filenames.each do |filename|
+        prev_path = "#{BUILD_DIR}/" + prev.git_tag.to_s + "/src"
+        curr_path = "#{BUILD_DIR}/" + curr.git_tag.to_s + "/src"
+
+        # puts "File To Match: " + filename
+        # puts "prev_path: " + prev_path
+        # puts "curr_path: " + curr_path
+
+        if prev_filenames.include?(filename)
+          # puts "FOUND CHANGES FOR "+filename
+          astDiffJSONArray = diffAST(prev_path + "/" + filename,curr_path + "/" + filename)
+          saveASTChanges(astDiffJSONArray,session.id,curr.git_tag,filename)
+        end
+      end
+    end
+  end
 end

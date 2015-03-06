@@ -11,7 +11,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150304035437) do
+ActiveRecord::Schema.define(version: 20150306184347) do
+
+  create_table "AST_diff_nodes", force: true do |t|
+    t.integer  "AST_tree_nodes_id"
+    t.integer  "AST_trees_id"
+    t.string   "diffActionType"
+    t.string   "diffObjectType"
+    t.string   "diffObjectLabel"
+    t.string   "diffParentType"
+    t.integer  "diffBeforePos"
+    t.integer  "diffBeforeLength"
+    t.integer  "diffAfterPos"
+    t.integer  "diffAfterLength"
+    t.integer  "groupLeadNode"
+    t.integer  "groupParentNode"
+    t.integer  "groupNumber"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_diff_nodes", ["AST_tree_nodes_id"], name: "index_AST_diff_nodes_on_AST_tree_nodes_id"
+  add_index "AST_diff_nodes", ["AST_trees_id"], name: "index_AST_diff_nodes_on_AST_trees_id"
 
   create_table "AST_tree_nodes", force: true do |t|
     t.integer  "AST_trees_id"
