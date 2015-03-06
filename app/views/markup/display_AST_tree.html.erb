@@ -27,7 +27,7 @@
 
   .link {
     fill: none;
-    stroke: #ccc;
+    stroke: #ccc;*/
     stroke-width: 2px;
   }
   
@@ -47,7 +47,7 @@ var treeData = gon.astTree;      //JSON object with the data
 // ************** Generate the tree diagram  *****************
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
   width = $(window).width() - margin.right - margin.left,
-  height = $(window).height()  - margin.top - margin.bottom;
+  height = $(window).height()  - margin.top - margin.bottom - 100;
   
 var i = 0,
   duration = 750,
@@ -94,7 +94,19 @@ function update(source) {
 
   nodeEnter.append("circle")
     .attr("r", 1e-6)
-    .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+    .style("fill", function(d) { 
+      return d._children ? "lightsteelblue" : "#fff"; 
+    })
+    .style("stroke", function(d) { 
+      if (d.diffStatus == "Insert")
+      return "orange"; 
+    if (d.diffStatus == "Delete")
+      return "red"; 
+    if (d.diffStatus == "Move")
+      return "blue"; 
+    if (d.diffStatus == "Update")
+      return "green";
+    });
 
   nodeEnter.append("text")
     .attr("x", function(d) { return d.children || d._children ? -13 : 13; })

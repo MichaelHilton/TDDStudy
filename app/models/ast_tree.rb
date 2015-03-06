@@ -10,11 +10,18 @@ class AstTree < ActiveRecord::Base
   def fullJSONTree(id)
     puts "@@@@@@@@@@@@@@@@@@@@@  fullJSONTree @@@@@@@@@@@@@@@@@@@@@"
 
+
+
+
+    puts "id: "
+    puts id
     tree = AstTree.find_by(id: id)
     puts tree
-    rootNode = AstTreeNode.find_by(tree.id, pos: 0)
+    rootNode = AstTreeNode.find_by(AST_Trees_id: tree.id, astPos: 0)
     puts rootNode.inspect
 
+    @allDiffs = AstDiffNode.where(AST_Trees_id: tree.id)
+    puts "All Diffs " + @allDiffs.inspect
     tree_JSON = buildASTNode(rootNode.id)
 
 
@@ -27,9 +34,33 @@ class AstTree < ActiveRecord::Base
   end
 
   def buildASTNode(id)
+
+
     puts "BUILD AST NODE"
     curr_node =  AstTreeNode.find_by(id: id)
     tree_JSON = Hash.new
+
+
+    # if @allDiffs.any? {|diff| diff.diffBeforePos == curr_node.astPos}
+    #   puts "match"
+    #   puts diff.inspect
+    #   tree_JSON[:diffStatus] = diff.diffActionType
+    # end
+
+    @allDiffs.each do |diff|
+
+      if diff.diffBeforePos == curr_node.astPos
+        puts "Match"
+        tree_JSON[:diffStatus] = diff.diffActionType
+        break
+      end
+
+    end
+
+
+
+
+
     tree_JSON[:type] = curr_node.astType
     tree_JSON[:label] = curr_node.astLabel
     tree_JSON[:typeLabel] = curr_node.astTypeLabel
