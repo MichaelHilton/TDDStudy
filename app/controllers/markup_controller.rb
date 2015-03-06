@@ -38,6 +38,7 @@ class MarkupController < ApplicationController
     filename= params[:filename]
 
     @AST_Tree = AstTree.find_by(session_id: id,git_tag: gitTag, filename: filename)
+    # nextAST_tree = AstTree.find_by(session_id: id,git_tag: gitTag.to_i+1, filename: filename)
     returnArray = Array.new
     returnArray.push(@AST_Tree.fullJSONTree(@AST_Tree.id))
     gon.astTree = returnArray

@@ -49,11 +49,25 @@ class AstTree < ActiveRecord::Base
 
     @allDiffs.each do |diff|
 
-      if diff.diffBeforePos == curr_node.astPos
-        puts "Match"
-        tree_JSON[:diffStatus] = diff.diffActionType
-        break
+      if diff.diffActionType == "Insert"
+        if diff.diffBeforePos == curr_node.astPos
+          # puts "Match"
+          tree_JSON[:diffStatus] = diff.diffActionType
+          break
+        end
+      elsif diff.diffActionType == "Move" || diff.diffActionType == "Update"
+        if diff.diffAfterPos == curr_node.astPos
+          # puts "Match"
+          tree_JSON[:diffStatus] = diff.diffActionType
+          break
+        end
+
+        # elsif diff.diffActionType == "Delete"
+
+
+
       end
+
 
     end
 
