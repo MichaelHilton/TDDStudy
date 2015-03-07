@@ -31,6 +31,20 @@ class MarkupController < ApplicationController
     Rails.root.to_s + '/'
   end
 
+
+  def display_AST_tree
+    id = params[:id]
+    gitTag = params[:gitTag]
+    filename= params[:filename]
+
+    @AST_Tree = AstTree.find_by(session_id: id,git_tag: gitTag, filename: filename)
+    # nextAST_tree = AstTree.find_by(session_id: id,git_tag: gitTag.to_i+1, filename: filename)
+    returnArray = Array.new
+    returnArray.push(@AST_Tree.fullJSONTree(@AST_Tree.id))
+    gon.astTree = returnArray
+  end
+
+
   def mark_completed
     @kata = params[:kata]
     researcher_id = Researcher.find_by(name: @researcher).id
@@ -382,10 +396,10 @@ class MarkupController < ApplicationController
       firstCompile = cycle.phases.first.compiles.first
       lastCompile = cycle.phases.last.compiles.last
       unless lastCompile.nil?
-      curr_cycle["startCompile"] = firstCompile.git_tag
-      curr_cycle["endCompile"] = lastCompile.git_tag
-      curr_cycle["valid_tdd"] = cycle.valid_tdd
-      allCycles << curr_cycle
+        curr_cycle["startCompile"] = firstCompile.git_tag
+        curr_cycle["endCompile"] = lastCompile.git_tag
+        curr_cycle["valid_tdd"] = cycle.valid_tdd
+        allCycles << curr_cycle
       end
     end
     gon.allCycles = allCycles

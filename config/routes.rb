@@ -38,6 +38,8 @@ Rails.application.routes.draw do
 
   get 'markup/markup_comparison' => 'markup#markup_comparison'
 
+  get 'markup/display_AST_tree' => 'markup#display_AST_tree'
+
   get 'markup/:researcher' => 'markup#researcher'
 
   ### Mark Completed
