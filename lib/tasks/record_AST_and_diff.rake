@@ -97,9 +97,9 @@ def saveASTChanges(ast_JSON_string,session_id,git_tag,filename)
       currASTDiffNode.diffAfterPos = ast_diff_node["after"]["pos"]
       currASTDiffNode.diffAfterLength = ast_diff_node["after"]["length"]
     end
-    # puts session_id
-    # puts git_tag
-    # puts filename
+    print "Session_id: " + session_id.to_s
+    print " git_tag:"+ git_tag.to_s
+    puts " filename:" + filename.to_s
     currASTTree = AstTree.find_by(session_id: session_id,git_tag: git_tag, filename: filename)
     # puts currASTTree.inspect
     currASTDiffNode.AST_trees_id = currASTTree.id
@@ -110,7 +110,7 @@ end
 
 
 def record_AST_and_diff
-
+  FileUtils.mkdir_p BUILD_DIR, :mode => 0700
   AstTree.delete_all
   AstTreeNode.delete_all
   AstTreeRelationships.delete_all
@@ -171,5 +171,7 @@ def record_AST_and_diff
         end
       end
     end
+    FileUtils.remove_entry_secure(BUILD_DIR)
   end
+
 end
