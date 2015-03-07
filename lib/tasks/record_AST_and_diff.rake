@@ -21,7 +21,7 @@ def root_path
 end
 
 def store_AST_Tree(session_id,curr_path,filename,git_tag)
-  puts "store_AST_Tree"
+  # puts "store_AST_Tree"
   ast_tree_string = treeAST(curr_path + "/" + filename)
   # puts ast_tree_string
   ast_tree = AstTree.new
@@ -32,12 +32,12 @@ def store_AST_Tree(session_id,curr_path,filename,git_tag)
 
   json_ast_string = JSON.parse(ast_tree_string)
   # puts ast_tree_string
-  puts json_ast_string["type"]
-  puts json_ast_string["typeLabel"]
-  puts json_ast_string["pos"]
-  puts json_ast_string["length"]
-  puts json_ast_string["children"][0]["type"]
-  puts json_ast_string["children"].length
+  # puts json_ast_string["type"]
+  # puts json_ast_string["typeLabel"]
+  # puts json_ast_string["pos"]
+  # puts json_ast_string["length"]
+  # puts json_ast_string["children"][0]["type"]
+  # puts json_ast_string["children"].length
 
 
   currAstTreeNode = AstTreeNode.new
@@ -54,11 +54,11 @@ end
 
 
 def saveChildrenToDB(childrenArray,parent,astTree)
-  puts "========== CHILD =========="
-  puts childrenArray.inspect
-  puts childrenArray
+  # puts "========== CHILD =========="
+  # puts childrenArray.inspect
+  # puts childrenArray
   childrenArray.each do |child|
-    puts "========== CHILD =========="
+    # puts "========== CHILD =========="
     currAstTreeNode = AstTreeNode.new
     currAstTreeNode.astType = child["type"]
     currAstTreeNode.astTypeLabel = child["typeLabel"]
@@ -72,7 +72,7 @@ def saveChildrenToDB(childrenArray,parent,astTree)
     astTreeRel.parent_id = parent.id
     astTreeRel.child_id = currAstTreeNode.id
     astTreeRel.save
-    puts child.inspect
+    # puts child.inspect
 
     saveChildrenToDB(child["children"],currAstTreeNode,astTree)
   end
@@ -80,13 +80,13 @@ end
 
 
 def saveASTChanges(ast_JSON_string,session_id,git_tag,filename)
-  puts "================ saveASTChanges ================"
+  # puts "================ saveASTChanges ================"
   # puts "ast_JSON_string: "+ ast_JSON_string
   json_diff_nodes = JSON.parse(ast_JSON_string)
   json_diff_nodes.each do |ast_diff_node|
 
-    puts "^^^^^^^^^^^^^^^^^^^^ AST DIFF NODE ^^^^^^^^^^^^^^^^^^^^"
-    puts ast_diff_node.inspect
+    # puts "^^^^^^^^^^^^^^^^^^^^ AST DIFF NODE ^^^^^^^^^^^^^^^^^^^^"
+    # puts ast_diff_node.inspect
     currASTDiffNode = AstDiffNode.new
     currASTDiffNode.diffActionType = ast_diff_node["action_type"]
     currASTDiffNode.diffObjectType = ast_diff_node["object"]["type"]
@@ -97,38 +97,14 @@ def saveASTChanges(ast_JSON_string,session_id,git_tag,filename)
       currASTDiffNode.diffAfterPos = ast_diff_node["after"]["pos"]
       currASTDiffNode.diffAfterLength = ast_diff_node["after"]["length"]
     end
-
-    puts session_id
-    puts git_tag
-    puts filename
+    # puts session_id
+    # puts git_tag
+    # puts filename
     currASTTree = AstTree.find_by(session_id: session_id,git_tag: git_tag, filename: filename)
-
-    puts currASTTree.inspect
-
+    # puts currASTTree.inspect
     currASTDiffNode.AST_trees_id = currASTTree.id
-
-
     currASTDiffNode.save
-
-
-    # t.string :diffActionType
-    # t.string :diffObjectType
-    # t.string :diffObjectLabel
-    # t.string :diffParentType
-    # t.integer :diffBeforePos
-    # t.integer :diffBeforeLength
-    # t.integer :diffAfterPos
-    # t.integer :diffAfterLength
-    # t.integer :groupLeadNode
-    # t.integer :groupParentNode
-    # t.integer :groupNumber
-
-
   end
-
-
-  # AstDiffNode
-
 end
 
 
@@ -142,10 +118,11 @@ def record_AST_and_diff
 
   Session.find_by_sql("SELECT * from Sessions where tdd_score > .7 AND total_cycle_count > 3").each do |session|
 
+    puts "~~~~~~~~~~~~~~~~~~~~~~~~ Session "+session.id.to_s+" ~~~~~~~~~~~~~~~~~~~~~~~~"
     # @currSession = session
-    puts session.inspect
+    # puts session.inspect
     session.compiles.each_with_index do |compile, index|
-      puts "compile.git_tag: "+ compile.git_tag.to_s
+      # puts "compile.git_tag: "+ compile.git_tag.to_s
       puts "index: "+ index.to_s
 
       path = "#{BUILD_DIR}/" + compile.git_tag.to_s + "/src"
@@ -157,7 +134,7 @@ def record_AST_and_diff
       curr_filenames.each do |filename|
         # prev_path = "#{BUILD_DIR}/" + prev.git_tag.to_s + "/src"
         curr_path = "#{BUILD_DIR}/" + compile.git_tag.to_s + "/src"
-        puts "File To Match" + filename
+        # puts "File To Match" + filename
 
         store_AST_Tree(session.id,curr_path,filename,compile.git_tag)
       end
