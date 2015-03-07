@@ -140,8 +140,7 @@ def record_AST_and_diff
   AstTreeRelationships.delete_all
   AstDiffNode.delete_all
 
-  Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
-  INNER JOIN interrater_sessions as i on i.session_id = s.id WHERE s.id = 2456").each do |session|
+  Session.find_by_sql("SELECT * from Sessions where tdd_score > .7 AND total_cycle_count > 3").each do |session|
 
     # @currSession = session
     puts session.inspect
