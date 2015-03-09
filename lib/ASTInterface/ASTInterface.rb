@@ -54,8 +54,8 @@ def findChangeType(file_name,before_path,after_path)
 end
 
 def findFileType(file_path)
-  numAsserts = findAsserts(file_path)
-  if numAsserts > 0
+  numAsserts, numMethods = findAsserts(file_path)
+  if numAsserts > 0 || numMethods > 0
     return "Test"
   else
     return "Production"
@@ -106,7 +106,7 @@ def findAsserts(path)
 
   results = searcher.find_tests(abs_path)
   File.delete(file)
-  return results["allAsserts"]
+  return results["allAsserts"], results["methods"]
 end
 
 # Optional command-line execution using --tree or --diff options

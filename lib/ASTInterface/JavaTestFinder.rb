@@ -51,10 +51,10 @@ class JavaTestFinder
     #get all asserts
     all_asserts = find_asserts(json)
 
-    format_output(test_assert_map, all_asserts)
+    format_output(test_assert_map, all_asserts, test_methods)
   end
 
-  def format_output(test_assert_map, all_asserts)
+  def format_output(test_assert_map, all_asserts, test_methods)
   	result = {}
 
     result["tests"] = test_assert_map.keys.size
@@ -66,6 +66,8 @@ class JavaTestFinder
     end
 
     result["allAsserts"] = all_asserts.size
+
+    result["methods"] = test_methods.size
 
     result
   end
@@ -98,7 +100,7 @@ class JavaTestFinder
 
   def is_assert(invocation)
     valid_assert_names = ["assertArrayEquals", "assertEquals", "assertFalse", "assertNotEquals", "assertNotNull", "assertNotSame", "assertNull", "assertSame", "assertThat", "assertTrue"]
-  	valid_assert_names = ["assertArrayEquals", "assertEquals", "assertNotSame", "assertNull", "assertSame", "assertThat", "assertTrue", "assertFalse"]
+  #	valid_assert_names = ["assertArrayEquals", "assertEquals", "assertNotSame", "assertNull", "assertSame", "assertThat", "assertTrue", "assertFalse"]
   	method_name = get_method_name(invocation)
 
   	is_valid = valid_assert_names.include? method_name
