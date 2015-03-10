@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150306184347) do
+ActiveRecord::Schema.define(version: 20150310034501) do
 
   create_table "AST_diff_nodes", force: true do |t|
     t.integer  "AST_tree_nodes_id"
@@ -63,6 +63,17 @@ ActiveRecord::Schema.define(version: 20150306184347) do
   end
 
   add_index "AST_trees", ["session_id"], name: "index_AST_trees_on_session_id"
+
+  create_table "ast_json_trees", force: true do |t|
+    t.integer  "session_id"
+    t.text     "ast_json_tree"
+    t.string   "filename"
+    t.integer  "git_tag"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ast_json_trees", ["session_id"], name: "index_ast_json_trees_on_session_id"
 
   create_table "compiles", force: true do |t|
     t.integer  "phase_id"
