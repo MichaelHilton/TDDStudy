@@ -1552,7 +1552,7 @@ function addTitleAndDiffCode(str1, str2, element) {
 		$("#" + safeName).click(collapse);
 	}
 
-	$('#' + safeName).html(element + " ChangeValue:" + (diffLength - 1));
+	$('#' + safeName).html(element + " ID:" +  gon.session_id + " Loc:"+ currLocation +" ChangeValue:" + (diffLength - 1) );
 
 	// $('#compare_' + safeName).mergely('resize')
 }
