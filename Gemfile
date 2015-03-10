@@ -31,6 +31,8 @@ gem 'smarter_csv'
 gem 'ace-rails-ap'
 # this makes getting data into json for the viz stuff WAY easier
 gem 'gon'
+# this gem should make it easier to deal with AST trees
+gem 'rubytree'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

@@ -112,6 +112,9 @@ GEM
     rspec-mocks (3.1.3)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.2)
+    rubytree (0.9.4)
+      json (~> 1.8)
+      structured_warnings (~> 0.1)
     sass (3.2.19)
     sass-rails (4.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -131,6 +134,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    structured_warnings (0.2.0)
     therubyrhino (2.0.4)
       therubyrhino_jar (>= 1.7.3)
     therubyrhino_jar (1.7.4)
@@ -165,6 +169,7 @@ DEPENDENCIES
   jquery-rails
   rails (= 4.1.5)
   rspec
+  rubytree
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)
   smarter_csv
