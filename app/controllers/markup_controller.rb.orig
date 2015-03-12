@@ -402,6 +402,16 @@ class MarkupController < ApplicationController
       puts "CYCLE:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
       # puts cycle.inspect
       # puts cycle.phases.first.compiles.first.git_tag.to_s
+<<<<<<< HEAD
+      curr_cycle["startCompile"] = cycle.phases.first.compiles.first.git_tag
+      if cycle.phases.last.compiles.count > 0
+        curr_cycle["endCompile"] = cycle.phases.last.compiles.last.git_tag
+      else
+        curr_cycle["endCompile"] = cycle.phases.first.compiles.first.git_tag
+      end
+      curr_cycle["valid_tdd"] = cycle.valid_tdd
+      allCycles << curr_cycle
+=======
       firstCompile = cycle.phases.first.compiles.first
       lastCompile = cycle.phases.last.compiles.last
       unless lastCompile.nil?
@@ -410,6 +420,7 @@ class MarkupController < ApplicationController
         curr_cycle["valid_tdd"] = cycle.valid_tdd
         allCycles << curr_cycle
       end
+>>>>>>> 7ff21d42cc458c63a26eaca5054fe81bf8b141ea
     end
     gon.allCycles = allCycles
 

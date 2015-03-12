@@ -560,8 +560,9 @@ function drawKataBackground() {
 }
 
 
-function drawCompilePoints() {
 
+<<<<<<< HEAD
+=======
 	//Draw Compile Points
 	var bar = chart.selectAll("g")
 		.data(data)
@@ -596,6 +597,7 @@ function drawCompilePoints() {
 	// 	.attr("height", 10)
 	// 	.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
 }
+>>>>>>> 7ff21d42cc458c63a26eaca5054fe81bf8b141ea
 
 function drawAxisAndBars() {
 	// //Axis
