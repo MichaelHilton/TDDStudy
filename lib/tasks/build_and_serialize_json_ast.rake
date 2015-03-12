@@ -22,7 +22,7 @@ end
 
 
 def addChildrenToTree(childrenArray,curr_node)
-  puts "========== CHILD =========="
+  # puts "========== CHILD =========="
   childrenArray.each do |child|
 
     root_node_hash = Hash.new
@@ -32,8 +32,8 @@ def addChildrenToTree(childrenArray,curr_node)
     root_node_hash["label"] = child["label"]
     root_node_hash["length"] = child["length"]
 
-    nodeName = root_node_hash["pos"] + ":"+ root_node_hash["type"]
-    puts nodeName
+    nodeName = root_node_hash["pos"] + ":"+ root_node_hash["typeLabel"]
+    # puts nodeName
 
     curr_node << Tree::TreeNode.new(nodeName, root_node_hash)
 
@@ -42,7 +42,7 @@ def addChildrenToTree(childrenArray,curr_node)
 end
 
 
-def build_AST_Tree(session_id,curr_path,filename,git_tag)
+def build_AST_Tree(session_id,curr_path,filename,git_tag,difNodeArray)
   puts "================ buildASTTree ================"
   ast_tree_string = treeAST(curr_path + "/" + filename)
   ast_tree = AstJsonTree.new
@@ -60,15 +60,15 @@ def build_AST_Tree(session_id,curr_path,filename,git_tag)
   root_node_hash["label"] = json_ast_string["label"]
   root_node_hash["length"] = json_ast_string["length"]
 
-  nodeName = root_node_hash["pos"] + ":"+ root_node_hash["type"]
+  nodeName = root_node_hash["pos"] + ":"+ root_node_hash["typeLabel"]
   root_node = Tree::TreeNode.new(nodeName, root_node_hash)
   root_node.print_tree
 
   addChildrenToTree(json_ast_string["children"],root_node)
-  puts "888888888888888 PRINT TREE 888888888888888"
+  # puts "888888888888888 PRINT TREE 888888888888888"
   root_node.print_tree
 
-  puts root_node.to_json
+  # puts root_node.to_json
   ast_tree.ast_json_tree = root_node.to_json
   ast_tree.save
 end
@@ -100,7 +100,7 @@ def build_and_serialize_json_ast
           curr_path = "#{BUILD_DIR}/" + compile.git_tag.to_s + "/src"
           # puts "File To Match" + filename
 
-          build_AST_Tree(session.id,curr_path,filename,compile.git_tag)
+          build_AST_Tree(session.id,curr_path,filename,compile.git_tag,nil)
         end
       end
     end
@@ -132,10 +132,11 @@ def build_and_serialize_json_ast
         if prev_filenames.include?(filename)
           # puts "FOUND CHANGES FOR "+filename
           astDiffJSONArray = diffAST(prev_path + "/" + filename,curr_path + "/" + filename)
+          puts "^^^^^^^^^^^^^^^^^^^^^^ astDiffJSONArray ^^^^^^^^^^^^^^^^^^^^^^"
           puts astDiffJSONArray
           # saveASTChanges(astDiffJSONArray,session.id,curr.git_tag,filename)
         end
-        build_AST_Tree(curr.id,curr_path,filename,curr.git_tag)
+        build_AST_Tree(session.id,curr_path,filename,curr.git_tag,astDiffJSONArray)
       end
     end
     FileUtils.remove_entry_secure(BUILD_DIR)
