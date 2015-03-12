@@ -23,6 +23,7 @@ def dojo
 end
 
 def defaultSetup(curr_path)
+  puts "DEFAULT_SETUP"
   if(File.exist?(curr_path + "\/Untitled.java") && File.exist?(curr_path + "\/UntitledTest.java"))
     file = File.open(curr_path + "\/Untitled.java" , "rb")
     contents = file.read
@@ -32,6 +33,34 @@ def defaultSetup(curr_path)
 
     templateProduction = "\npublic class Untitled {\n    \n    public static int answer() {\n        return 42;\n    }\n}\n"
     template_test = "import org.junit.*;\nimport static org.junit.Assert.*;\n\npublic class UntitledTest {\n    \n    @Test\n    public void hitch_hiker() {\n        int expected = 6 * 9;\n        int actual = Untitled.answer();\n        assertEquals(expected, actual);\n    }\n}\n"
+
+
+
+    if(templateProduction == contents)
+      if template_test == test_contents
+        puts "EQUAL"
+        return true
+      end
+    end
+  end
+
+  if(File.exist?(curr_path + "\/Hiker.java") && File.exist?(curr_path + "\/HikerTest.java"))
+    file = File.open(curr_path + "\/Hiker.java" , "rb")
+    contents = file.read
+
+    # puts "FILE:"
+    # puts contents.inspect
+
+    test_file = File.open(curr_path + "\/HikerTest.java" , "rb")
+    test_contents = test_file.read
+
+    # puts "Test FILE:"
+    # puts test_contents.inspect
+
+    templateProduction = "\npublic class Hiker {\n\n    public static int answer() {\n        return 6 * 9;\n    }\n}\n"
+    template_test = "import org.junit.*;\nimport static org.junit.Assert.*;\n\npublic class HikerTest {\n\n    @Test\n    public void life_the_universe_and_everything() {\n        int expected = 42;\n        int actual = Hiker.answer();\n        assertEquals(expected, actual);\n    }\n}\n"
+
+
 
     if(templateProduction == contents)
       if template_test == test_contents
@@ -53,19 +82,19 @@ def build_files(light)
     files = light.tag.visible_files.keys.select{ |filename| filename.include? ".java" }
     path = "#{BUILD_DIR}/" + light.number.to_s + "/src"
 
-    puts "Path: " +path if DEBUG
+    # puts "Path: " +path if DEBUG
     FileUtils.mkdir_p path, :mode => 0700
 
-    puts Dir.pwd if DEBUG
+    # puts Dir.pwd if DEBUG
 
     files.each do |file|
       if (light.tag.visible_files[file].length > 1)
         #create file and write all content to it
-        File.open(path + "/" + file, 'w') { |f| f.write(light.tag.visible_files[file]) }
+        File.open(path + "/" + File.basename(file), 'w') { |f| f.write(light.tag.visible_files[file]) }
 
         #save filenames and filepaths
         filenames << (file)
-        puts path + "/" + file if DEBUG
+        # puts path + "/" + file if DEBUG
         filepaths << (path + "/" + file)
       end
     end
@@ -86,9 +115,11 @@ def ast_processing
 
   #TO CLEAR UPDATE compiles SET test_change = null
 
-  Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
-  INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
+  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
+  # INNER JOIN interrater_sessions as i on i.session_id = s.id;").each do |session_id|
 
+  # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id WHERE s.id = 1246").each do |session_id|
+  Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN markup_assignments as m on m.session_id = s.id").each do |session_id|
 
     # Session.find_by_sql("Select * from Sessions as s
     # inner join compiles as c on s.id = c.session_id
@@ -211,10 +242,11 @@ def ast_processing
         puts "CURR SAVE"
         curr.save
         puts "----------------------"
-
+        FileUtils.remove_entry_secure(BUILD_DIR)
       end
+
     end
   end
 
-  FileUtils.remove_entry_secure(BUILD_DIR)
+
 end

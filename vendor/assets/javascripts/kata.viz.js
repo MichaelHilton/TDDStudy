@@ -560,7 +560,42 @@ function drawKataBackground() {
 }
 
 
+function drawCompilePoints() {
 
+	//Draw Compile Points
+	var bar = chart.selectAll("g")
+		.data(data)
+		.enter()
+		.append("g");
+
+	bar.append("rect")
+		.attr("x", function(d, i) {
+			return x(d.git_tag);
+		})
+		.attr("y", -5)
+		.attr("width", 10)
+		.attr("height", 10)
+		.attr("r", 4)
+		.attr("rx", 2.5)
+		.attr("ry", 2.5)
+		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+		.attr("fill", function(d) {
+			return TDDColor(d.light_color);
+		})
+		.attr("stroke-width", 2);
+
+		
+	// 	bar.append("text")
+	// .text(function(d){
+	// 	return d.total_assert_count;
+	// }).attr("x", function(d, i) {
+	// 		return x(d.git_tag);
+	// 	})
+	// 	.attr("y", -5)
+	// 	.attr("width", 10)
+	// 	.attr("height", 10)
+	// 	.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
+}
 
 function drawAxisAndBars() {
 	// //Axis
@@ -836,6 +871,18 @@ function drawUncatagorizedKata() {
 		})
 		.attr("stroke-width", 2);
 
+
+		bar.append("text")
+	.text(function(d){
+		return d.total_assert_count;
+	}).attr("x", function(d, i) {
+			return x(d.git_tag);
+		})
+		.attr("y", -5)
+		.attr("width", 10)
+		.attr("height", 10)
+		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
+
 	//Axis
 	var currTDDBar = chart.append("g")
 		.attr("class", "x axis")
@@ -1036,6 +1083,18 @@ function drawallMarkups() {
 		})
 		.attr("stroke-width", 2);
 
+
+		bar.append("text")
+	.text(function(d){
+		return d.total_assert_count;
+	}).attr("x", function(d, i) {
+			return x(d.git_tag);
+		})
+		.attr("y", -5)
+		.attr("width", 10)
+		.attr("height", 10)
+		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
+
 	//Axis
 	var currTDDBar = chart.append("g")
 		.attr("class", "x axis")
@@ -1220,6 +1279,18 @@ function drawKataViz() {
 			return TDDColor(d.light_color);
 		})
 		.attr("stroke-width", 2);
+
+
+		bar.append("text")
+	.text(function(d){
+		return d.total_assert_count;
+	}).attr("x", function(d, i) {
+			return x(d.git_tag);
+		})
+		.attr("y", -5)
+		.attr("width", 10)
+		.attr("height", 10)
+		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
 
 	var currTDDBar = chart.append("g")
 		.attr("class", "x axis")
@@ -1539,7 +1610,7 @@ function addTitleAndDiffCode(str1, str2, element) {
 		$("#" + safeName).click(collapse);
 	}
 
-	$('#' + safeName).html(element + " ChangeValue:" + (diffLength - 1));
+	$('#' + safeName).html(element + " ID:" +  gon.session_id + " Loc:"+ currLocation +" ChangeValue:" + (diffLength - 1) );
 
 	// $('#compare_' + safeName).mergely('resize')
 }

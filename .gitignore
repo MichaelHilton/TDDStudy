@@ -24,3 +24,9 @@
 # Ignore AST output files
 /ast_builds
 temp.json
+calc_cycle_data.txt
+calc_edit_size.txt
+calc_phase_data.txt
+calc_phase_stats.txt
+calc_session_data.txt
+calc_test_coverage.txt

@@ -13,6 +13,16 @@ class JavaTestFinder
     found_methods.length
   end
 
+  def find_all_nodes(filePath)
+    json = get_json_from_file(filePath)
+
+    #find all methods
+    found_methods = []
+    find_nodes(json, found_methods, ->(x){x})
+
+    found_methods.length
+  end
+
   def find_method_invocations(filePath)
     json = get_json_from_file(filePath)
 

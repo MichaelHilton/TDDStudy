@@ -11,7 +11,58 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150106034930) do
+ActiveRecord::Schema.define(version: 20150306184347) do
+
+  create_table "AST_diff_nodes", force: true do |t|
+    t.integer  "AST_tree_nodes_id"
+    t.integer  "AST_trees_id"
+    t.string   "diffActionType"
+    t.string   "diffObjectType"
+    t.string   "diffObjectLabel"
+    t.string   "diffParentType"
+    t.integer  "diffBeforePos"
+    t.integer  "diffBeforeLength"
+    t.integer  "diffAfterPos"
+    t.integer  "diffAfterLength"
+    t.integer  "groupLeadNode"
+    t.integer  "groupParentNode"
+    t.integer  "groupNumber"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_diff_nodes", ["AST_tree_nodes_id"], name: "index_AST_diff_nodes_on_AST_tree_nodes_id"
+  add_index "AST_diff_nodes", ["AST_trees_id"], name: "index_AST_diff_nodes_on_AST_trees_id"
+
+  create_table "AST_tree_nodes", force: true do |t|
+    t.integer  "AST_trees_id"
+    t.string   "astType"
+    t.string   "astLabel"
+    t.string   "astTypeLabel"
+    t.integer  "astPos"
+    t.string   "astLength"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_tree_nodes", ["AST_trees_id"], name: "index_AST_tree_nodes_on_AST_trees_id"
+
+  create_table "AST_tree_relationships", force: true do |t|
+    t.integer  "parent_id"
+    t.integer  "child_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "AST_trees", force: true do |t|
+    t.integer  "session_id"
+    t.string   "filename"
+    t.integer  "git_tag"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "AST_trees", ["session_id"], name: "index_AST_trees_on_session_id"
 
   create_table "compiles", force: true do |t|
     t.integer  "phase_id"
@@ -35,6 +86,8 @@ ActiveRecord::Schema.define(version: 20150106034930) do
     t.datetime "updated_at"
     t.integer  "total_method_count"
     t.integer  "total_assert_count"
+    t.binary   "curr_AST_Tree",                limit: 1048576
+    t.binary   "curr_AST_Diff",                limit: 1048576
   end
 
   add_index "compiles", ["phase_id"], name: "index_compiles_on_phase_id"
@@ -147,6 +200,16 @@ ActiveRecord::Schema.define(version: 20150106034930) do
     t.float    "tdd_score"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "potential_complete"
+    t.boolean  "is_complete"
+    t.float    "test_cyclomatic_complexity"
+    t.float    "production_cyclomatic_complexity"
+    t.float    "final_production_file_method_count"
+    t.float    "final_test_file_method_count"
+    t.float    "final_total_method_count"
+    t.float    "final_production_AST_node_count"
+    t.float    "final_test_AST_node_count"
+    t.float    "final_total_AST_node_count"
   end
 
 end

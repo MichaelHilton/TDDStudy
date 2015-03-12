@@ -40,8 +40,23 @@ Rails.application.routes.draw do
 
   get 'markup/markup_comparison' => 'markup#markup_comparison'
 
+  get 'markup/display_AST_tree' => 'markup#display_AST_tree'
+
   get 'markup/:researcher' => 'markup#researcher'
 
+  ### Mark Completed
+
+  get 'completed/' => 'completed#index'
+
+  post 'completed/update_completion' => 'completed#update_completion'
+
+  get 'completed/timelineWithBrush' => 'markup#timelineWithBrush'
+
+  get 'completed/mark_kata/' => 'completed#mark_kata'
+
+  get 'completed/:kata' => 'completed#mark_completed'
+
+  ###
 
   get 'cycle_catagorizer/cycle_catgories'
 

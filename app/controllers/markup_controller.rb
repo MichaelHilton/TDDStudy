@@ -40,8 +40,78 @@ class MarkupController < ApplicationController
     Rails.root.to_s + '/'
   end
 
+
+  def display_AST_tree
+    id = params[:id]
+    gitTag = params[:gitTag]
+    filename= params[:filename]
+
+    @AST_Tree = AstTree.find_by(session_id: id,git_tag: gitTag, filename: filename)
+    # nextAST_tree = AstTree.find_by(session_id: id,git_tag: gitTag.to_i+1, filename: filename)
+    returnArray = Array.new
+    returnArray.push(@AST_Tree.fullJSONTree(@AST_Tree.id))
+    gon.astTree = returnArray
+  end
+
+
+  def mark_completed
+    @kata = params[:kata]
+    researcher_id = Researcher.find_by(name: @researcher).id
+    allSessions = Session.where(language_framework: "Java-1.8_JUnit", kata_name: "Fizz_Buzz", potential_complete: true)
+    gon.allSessions = allSessions
+
+  end
+
+  def markKata
+    id = params[:id]
+    currSession = Session.where(id: id).first
+
+    puts currSession.inspect
+    puts currSession.cyberdojo_id
+
+    allFiles = dojo.katas[currSession.cyberdojo_id].avatars[currSession.avatar].lights[currSession.total_light_count.to_i-1].tag.visible_files
+
+    gon.allFiles = allFiles
+    gon.is_complete = currSession.is_complete
+
+  end
+
+  def update_completion
+    puts "%%%%%%%%%%%%%%%%%%update_markup$$$$$$$$$$$$$$$$$$"
+    puts params[:complete]
+    curr_id =  params[:id]
+
+    currSession = Session.where(id: curr_id).first
+
+    if params[:complete] == "Yes"
+      currSession.is_complete = true
+    end
+    if params[:complete] == "No"
+      currSession.is_complete = false
+    end
+
+
+
+    currSession.save
+
+
+    names = Array.new
+    respond_to do |format|
+      format.html
+      # format.json { render :json => @oneSession }
+      format.json { render :json => names }
+    end
+  end
+
   def calculatePrecisionAndRecall(session)
     puts "%%%%%%%%%%%%%%%%%%%%%%%%% Recall %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    puts "Session.markups.count: " + session.markups.count.to_s
+    if(session.markups.count == 0)
+      returnValues = Array.new
+      returnValues[0] = "NA"
+      returnValues[1] = "NA"
+      return returnValues
+    end
     #calc recall
     compileColor = Hash.new
     session.cycles.each do |cycle|
@@ -58,16 +128,15 @@ class MarkupController < ApplicationController
     # puts "Number of Markups: "+ numMarkupCompiles.to_s
     # puts "Number of Compile Points: "+ totalMarkups.to_s
 
-    recall = (numMarkupCompiles.to_f/totalMarkups.to_f)
-    puts "Recall:" + recall.to_s
-    returnValues = Array.new
-    returnValues[1] = recall
+
 
     #calc precision
     puts "%%%%%%%%%%%%%%%%%%%%%%%%% Precision %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
     # puts session.markups.first.inspect
     numCorrect = 0
     numIncorrect = 0
+    recallWrong = 0
+    recallRight = 0
 
     if session.markups.count > 0
       aMarkupUser =  session.markups.select(:user).distinct.first.user
@@ -90,6 +159,17 @@ class MarkupController < ApplicationController
           # puts i
           puts "compileColor[i].to_s: "+ compileColor[i].to_s
           puts "markup.tdd_color.to_s: " + markup.tdd_color.to_s
+          if markup.tdd_color.to_s != "white"
+            puts "WHITE COMPILE"
+            if compileColor[i].to_s == "white"
+              puts "RECALL WRONG"
+              recallWrong = recallWrong +1
+            else
+              puts "RECALL WRITE"
+              recallRight = recallRight + 1
+            end
+          end
+
           if(compileColor[i].to_s == markup.tdd_color.to_s)
             numCorrect = numCorrect + 1
           else
@@ -97,66 +177,137 @@ class MarkupController < ApplicationController
           end
         end
       end
+      # recall = (numMarkupCompiles.to_f/totalMarkups.to_f)
+      @recall = (recallRight.to_f/(recallRight.to_f + recallWrong.to_f))
+      puts "Recall:" + @recall.to_s
+      returnValues = Array.new
+      returnValues[1] = @recall
+
       puts "numCorrect: "+ numCorrect.to_s
       puts "numIncorrect: "+ numIncorrect.to_s
       precision = (numCorrect.to_f/(numCorrect.to_f + numIncorrect.to_f))
       puts "Precision: " + precision.to_s
       returnValues[0] = precision
     end
+
     @totalNumCorrect = @totalNumCorrect + numCorrect
     @totalNumInCorrect = @totalNumInCorrect + numIncorrect
     @totalCompiles = @totalCompiles + totalMarkups
     @totalMarkedCompiles = @totalMarkedCompiles + numMarkupCompiles
+    @totalRecall = @totalRecall + recallRight
+    @totalRecallWrong = @totalRecallWrong + recallWrong
     puts "%%%%%%%%%%%%%%%%%%%%%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
     return returnValues
   end
 
   def researcher
     @researcher = params[:researcher]
-    researcher_id = Researcher.find_by(name: @researcher).id
-    all_sessions_markup = Array.new
+    if @researcher == "All"
+      puts "ALL"
 
-    @totalNumCorrect = 0
-    @totalNumInCorrect = 0
-    @totalCompiles = 0
-    @totalMarkedCompiles = 0
+      # researcher_id = Researcher.find_by(name: @researcher).id
+      all_sessions_markup = Array.new
+
+      @totalNumCorrect = 0
+      @totalNumInCorrect = 0
+      @totalCompiles = 0
+      @totalMarkedCompiles = 0
+      @totalRecall = 0
+      @totalRecallWrong = 0
+
+      @inter_sessions = InterraterSession.all
+      @inter_sessions.each do |interrater|
+        session = Session.find_by(id: interrater.session_id)
+        p_and_r = calculatePrecisionAndRecall(session)
+        # puts p_and_r.inspect
+        # puts p_and_r[1]
+        curr_session_markup = Hash.new
+        curr_session_markup["precision"] = p_and_r[0]
+        curr_session_markup["recall"] = p_and_r[1]
+        curr_session_markup["interRater"] = true
+        curr_session_markup["session"] = session
+        curr_session_markup["markup"] = session.markups
+        curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
+        all_sessions_markup << curr_session_markup
+      end
+
+      @markup_sessions = MarkupAssignment.all
+      @markup_sessions.each do |assignment|
+        session = Session.find_by(id: assignment.session_id)
+        p_and_r = calculatePrecisionAndRecall(session)
+        curr_session_markup = Hash.new
+        curr_session_markup["precision"] =  p_and_r[0]
+        curr_session_markup["recall"] =  p_and_r[1]
+        curr_session_markup["interRater"] = false
+        curr_session_markup["session"] = session
+        curr_session_markup["markup"] = session.markups
+        curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
+        all_sessions_markup << curr_session_markup
+      end
+
+      gon.all_sessions_markup = all_sessions_markup
+      gon.totalNumCorrect = @totalNumCorrect
+      gon.totalNumInCorrect = @totalNumInCorrect
+      gon.totalCompiles = @totalCompiles
+      gon.totalMarkedCompiles = @totalMarkedCompiles
+
+      gon.totalRecall = @totalRecall
+      gon.totalRecallWrong = @totalRecallWrong
 
 
-    @inter_sessions = InterraterSession.all
-    @inter_sessions.each do |interrater|
-      session = Session.find_by(id: interrater.session_id)
-      p_and_r = calculatePrecisionAndRecall(session)
-      # puts p_and_r.inspect
-      # puts p_and_r[1]
-      curr_session_markup = Hash.new
-      curr_session_markup["precision"] = p_and_r[0]
-      curr_session_markup["recall"] = p_and_r[1]
-      curr_session_markup["interRater"] = true
-      curr_session_markup["session"] = session
-      curr_session_markup["markup"] = session.markups
-      curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
-      all_sessions_markup << curr_session_markup
+
+    else
+
+      researcher_id = Researcher.find_by(name: @researcher).id
+      all_sessions_markup = Array.new
+
+      @totalNumCorrect = 0
+      @totalNumInCorrect = 0
+      @totalCompiles = 0
+      @totalMarkedCompiles = 0
+      @totalRecall = 0
+      @totalRecallWrong = 0
+
+
+      @inter_sessions = InterraterSession.all
+      @inter_sessions.each do |interrater|
+        session = Session.find_by(id: interrater.session_id)
+        p_and_r = calculatePrecisionAndRecall(session)
+        # puts p_and_r.inspect
+        # puts p_and_r[1]
+        curr_session_markup = Hash.new
+        curr_session_markup["precision"] = p_and_r[0]
+        curr_session_markup["recall"] = p_and_r[1]
+        curr_session_markup["interRater"] = true
+        curr_session_markup["session"] = session
+        curr_session_markup["markup"] = session.markups
+        curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
+        all_sessions_markup << curr_session_markup
+      end
+
+      @markup_sessions = MarkupAssignment.where(researcher_id: researcher_id)
+      @markup_sessions.each do |assignment|
+        session = Session.find_by(id: assignment.session_id)
+        p_and_r = calculatePrecisionAndRecall(session)
+        curr_session_markup = Hash.new
+        curr_session_markup["precision"] =  p_and_r[0]
+        curr_session_markup["recall"] =  p_and_r[1]
+        curr_session_markup["interRater"] = false
+        curr_session_markup["session"] = session
+        curr_session_markup["markup"] = session.markups
+        curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
+        all_sessions_markup << curr_session_markup
+      end
+
+      gon.all_sessions_markup = all_sessions_markup
+      gon.totalNumCorrect = @totalNumCorrect
+      gon.totalNumInCorrect = @totalNumInCorrect
+      gon.totalCompiles = @totalCompiles
+      gon.totalMarkedCompiles = @totalMarkedCompiles
+
+      gon.totalRecall = @totalRecall
+      gon.totalRecallWrong = @totalRecallWrong
     end
-
-    @markup_sessions = MarkupAssignment.where(researcher_id: researcher_id)
-    @markup_sessions.each do |assignment|
-      session = Session.find_by(id: assignment.session_id)
-      p_and_r = calculatePrecisionAndRecall(session)
-      curr_session_markup = Hash.new
-      curr_session_markup["precision"] =  p_and_r[0]
-      curr_session_markup["recall"] =  p_and_r[1]
-      curr_session_markup["interRater"] = false
-      curr_session_markup["session"] = session
-      curr_session_markup["markup"] = session.markups
-      curr_session_markup["compile_count"] = Array.new.push(session.compiles.count)
-      all_sessions_markup << curr_session_markup
-    end
-
-    gon.all_sessions_markup = all_sessions_markup
-    gon.totalNumCorrect = @totalNumCorrect
-    gon.totalNumInCorrect = @totalNumInCorrect
-    gon.totalCompiles = @totalCompiles
-    gon.totalMarkedCompiles = @totalMarkedCompiles
 
   end
 
@@ -226,10 +377,20 @@ class MarkupController < ApplicationController
 
 
   def display_kata
-    @researcher = params[:researcher]
-    @cyberdojo_id = params[:id]
-    @cyberdojo_avatar = params[:avatar]
-    @currSession = Session.where(cyberdojo_id: @cyberdojo_id, avatar: @cyberdojo_avatar).first  #.first
+    @session_id = params[:id]
+    # @researcher = params[:researcher]
+    # @cyberdojo_id = params[:id]
+    # @cyberdojo_avatar = params[:avatar]
+
+    # @currSession = Session.where(cyberdojo_id: @cyberdojo_id, avatar: @cyberdojo_avatar).first  #.first
+    @currSession = Session.where(id: @session_id).first
+
+    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    puts @currSession.inspect
+
+    @cyberdojo_id = @currSession.cyberdojo_id
+    @cyberdojo_avatar = @currSession.avatar
+
     gon.compiles = @currSession.compiles
     gon.cyberdojo_id = @cyberdojo_id
     gon.cyberdojo_avatar = @cyberdojo_avatar
@@ -238,16 +399,17 @@ class MarkupController < ApplicationController
     Cycle.where(session_id: @currSession.id).each do |cycle|
       curr_cycle = Hash.new()
       # endCompile: 3startCompile: 1valid_tdd: true
-      # puts "CYCLE:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      puts "CYCLE:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      # puts cycle.inspect
       # puts cycle.phases.first.compiles.first.git_tag.to_s
-      curr_cycle["startCompile"] = cycle.phases.first.compiles.first.git_tag
-      if cycle.phases.last.compiles.count > 0
-        curr_cycle["endCompile"] = cycle.phases.last.compiles.last.git_tag
-      else
-        curr_cycle["endCompile"] = cycle.phases.first.compiles.first.git_tag
+      firstCompile = cycle.phases.first.compiles.first
+      lastCompile = cycle.phases.last.compiles.last
+      unless lastCompile.nil?
+        curr_cycle["startCompile"] = firstCompile.git_tag
+        curr_cycle["endCompile"] = lastCompile.git_tag
+        curr_cycle["valid_tdd"] = cycle.valid_tdd
+        allCycles << curr_cycle
       end
-      curr_cycle["valid_tdd"] = cycle.valid_tdd
-      allCycles << curr_cycle
     end
     gon.allCycles = allCycles
 

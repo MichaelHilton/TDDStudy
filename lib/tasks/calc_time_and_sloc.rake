@@ -28,7 +28,11 @@ def calc_time_and_sloc
   # SELECT KATAS WE WANT TO COMPUTE CYCLES
   # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s
   # INNER JOIN interrater_sessions as i on i.session_id = s.id").each do |session_id|
-  Session.find_by_sql("SELECT s.* FROM Sessions as s Join compiles as c on c.session_id = s.id WHERE s.language_framework LIKE \"Java-1.8_JUnit\" AND c.total_sloc_count is Null and git_tag =1").each do |session_id|
+
+  Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s INNER JOIN interrater_sessions as i on i.session_id = s.id").each do |session_id|
+    # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s WHERE s.id = 9").each do |session_id|
+    # Session.find_by_sql("SELECT s.id,s.kata_name,s.cyberdojo_id,s.avatar FROM Sessions as s").each do |session_id|
+
     puts "CURR SESSION ID: " + session_id.id.to_s if CYCLE_DIAG
     puts session_id.inspect
     FileUtils.remove_entry_secure(BUILD_DIR)
