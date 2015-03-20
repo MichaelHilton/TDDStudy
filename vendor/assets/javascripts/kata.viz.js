@@ -54,12 +54,22 @@ function drawCycleArea(){
     .attr("height", 30)
     .attr("rx", 6)
     .attr("ry", 6)
-    .attr("stroke", "grey")
+    .attr("stroke", function(d) {
+      if (d.valid_tdd == true) {
+        return "gray";
+      }
+      if (d.valid_tdd == false) {
+      	return "white";
+        // return "#6F6F6F";
+      }
+
+    })
     .attr("fill", function(d) {
       if (d.valid_tdd == true) {
         return "#EEEEEE";
       }
       if (d.valid_tdd == false) {
+      	return "white";
         // return "#6F6F6F";
       }
 
@@ -560,42 +570,42 @@ function drawKataBackground() {
 }
 
 
-function drawCompilePoints() {
+// function drawCompilePoints() {
 
-	//Draw Compile Points
-	var bar = chart.selectAll("g")
-		.data(data)
-		.enter()
-		.append("g");
+// 	//Draw Compile Points
+// 	var bar = chart.selectAll("g")
+// 		.data(data)
+// 		.enter()
+// 		.append("g");
 
-	bar.append("rect")
-		.attr("x", function(d, i) {
-			return x(d.git_tag);
-		})
-		.attr("y", -5)
-		.attr("width", 10)
-		.attr("height", 10)
-		.attr("r", 4)
-		.attr("rx", 2.5)
-		.attr("ry", 2.5)
-		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
-		.attr("fill", function(d) {
-			return TDDColor(d.light_color);
-		})
-		.attr("stroke-width", 2);
+// 	bar.append("rect")
+// 		.attr("x", function(d, i) {
+// 			return x(d.git_tag);
+// 		})
+// 		.attr("y", -5)
+// 		.attr("width", 10)
+// 		.attr("height", 10)
+// 		.attr("r", 4)
+// 		.attr("rx", 2.5)
+// 		.attr("ry", 2.5)
+// 		.attr("transform", "translate(" + margin.left + "," + lineHeight + ")")
+// 		.attr("fill", function(d) {
+// 			return TDDColor(d.light_color);
+// 		})
+// 		.attr("stroke-width", 2);
 
 		
-	// 	bar.append("text")
-	// .text(function(d){
-	// 	return d.total_assert_count;
-	// }).attr("x", function(d, i) {
-	// 		return x(d.git_tag);
-	// 	})
-	// 	.attr("y", -5)
-	// 	.attr("width", 10)
-	// 	.attr("height", 10)
-	// 	.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
-}
+// 	// 	bar.append("text")
+// 	// .text(function(d){
+// 	// 	return d.total_assert_count;
+// 	// }).attr("x", function(d, i) {
+// 	// 		return x(d.git_tag);
+// 	// 	})
+// 	// 	.attr("y", -5)
+// 	// 	.attr("width", 10)
+// 	// 	.attr("height", 10)
+// 	// 	.attr("transform", "translate(" + margin.left + "," + lineHeight + ")");
+// }
 
 function drawAxisAndBars() {
 	// //Axis
@@ -1610,7 +1620,10 @@ function addTitleAndDiffCode(str1, str2, element) {
 		$("#" + safeName).click(collapse);
 	}
 
-	$('#' + safeName).html(element + " ID:" +  gon.session_id + " Loc:"+ currLocation +" ChangeValue:" + (diffLength - 1) );
+	// $('#' + safeName).html(element + " ID:" +  gon.session_id + " Loc:"+ currLocation +" ChangeValue:" + (diffLength - 1) );
+
+ $('#' + safeName).html(element + " ChangeValue:" + (diffLength - 1) );
+
 
 	// $('#compare_' + safeName).mergely('resize')
 }
