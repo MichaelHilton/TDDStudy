@@ -71,7 +71,7 @@ def copy_source_files_to_working_dir(curLight,compile)
   javaFiles = fileNames.select { |name|  name.include? "java" }
   currLightDir =  "./workingDir/"+curLight.number.to_s
 
-  `rm -rf ./workingDir/*`
+  # `rm -rf ./workingDir/*`
   `mkdir ./workingDir/`
   `mkdir #{currLightDir}`
   `mkdir #{currLightDir}/src`
@@ -110,11 +110,11 @@ def calc_test_coverage_in_dir(curLight,currTestClass,currLightDir)
     `rm -r ./*.clf`
 
     puts "starting Calc Coverage"
-    # puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar instrument --root-directory #{currLightDir}/src --destination #{currLightDir}/isrc --container #{currLightDir}/con.xml --language java --charset UTF-8"
-    # puts  "javac -cp ./vendor/calcCodeCovg/libs/*:#{currLightDir}/isrc #{currLightDir}/isrc/*.java"
-    # puts  "java -cp ./vendor/calcCodeCovg/libs/*:#{currLightDir}/isrc org.junit.runner.JUnitCore #{currTestClass}"
-    # puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar analyze --container #{currLightDir}/con.xml --coverage-log *.clf --name test1"
-    # puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar report --container #{currLightDir}/con.xml --destination #{currLightDir}/report.csv --session test1 --template ./vendor/calcCodeCovg/report-templates/CSV_Report.xml"
+    puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar instrument --root-directory #{currLightDir}/src --destination #{currLightDir}/isrc --container #{currLightDir}/con.xml --language java --charset UTF-8"
+    puts  "javac -cp ./vendor/calcCodeCovg/libs/*:#{currLightDir}/isrc #{currLightDir}/isrc/*.java"
+    puts  "java -cp ./vendor/calcCodeCovg/libs/*:#{currLightDir}/isrc org.junit.runner.JUnitCore #{currTestClass}"
+    puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar analyze --container #{currLightDir}/con.xml --coverage-log *.clf --name test1"
+    puts  "java -jar ./vendor/calcCodeCovg/libs/codecover-batch.jar report --container #{currLightDir}/con.xml --destination #{currLightDir}/report.csv --session test1 --template ./vendor/calcCodeCovg/report-templates/CSV_Report.xml"
 
 
 

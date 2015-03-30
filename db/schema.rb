@@ -13,47 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20150310034501) do
 
-  create_table "AST_diff_nodes", force: true do |t|
-    t.integer  "AST_tree_nodes_id"
-    t.integer  "AST_trees_id"
-    t.string   "diffActionType"
-    t.string   "diffObjectType"
-    t.string   "diffObjectLabel"
-    t.string   "diffParentType"
-    t.integer  "diffBeforePos"
-    t.integer  "diffBeforeLength"
-    t.integer  "diffAfterPos"
-    t.integer  "diffAfterLength"
-    t.integer  "groupLeadNode"
-    t.integer  "groupParentNode"
-    t.integer  "groupNumber"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "AST_diff_nodes", ["AST_tree_nodes_id"], name: "index_AST_diff_nodes_on_AST_tree_nodes_id"
-  add_index "AST_diff_nodes", ["AST_trees_id"], name: "index_AST_diff_nodes_on_AST_trees_id"
-
-  create_table "AST_tree_nodes", force: true do |t|
-    t.integer  "AST_trees_id"
-    t.string   "astType"
-    t.string   "astLabel"
-    t.string   "astTypeLabel"
-    t.integer  "astPos"
-    t.string   "astLength"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "AST_tree_nodes", ["AST_trees_id"], name: "index_AST_tree_nodes_on_AST_trees_id"
-
-  create_table "AST_tree_relationships", force: true do |t|
-    t.integer  "parent_id"
-    t.integer  "child_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "AST_trees", force: true do |t|
     t.integer  "session_id"
     t.string   "filename"

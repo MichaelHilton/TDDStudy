@@ -77,9 +77,9 @@ end
 def build_and_serialize_json_ast
   FileUtils.mkdir_p BUILD_DIR, :mode => 0700
   AstTree.delete_all
-  AstTreeNode.delete_all
-  AstTreeRelationships.delete_all
-  AstDiffNode.delete_all
+  # AstTreeNode.delete_all
+  # AstTreeRelationships.delete_all
+  # AstDiffNode.delete_all
   AstJsonTree.delete_all
 
   Session.find_by_sql("SELECT * from Sessions where tdd_score > .7 AND total_cycle_count > 3 AND id = 107").each do |session|
